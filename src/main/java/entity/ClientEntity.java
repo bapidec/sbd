@@ -3,6 +3,7 @@ package entity;
 import jakarta.persistence.*;
 
 @Entity
+@NamedQuery(name = "ClientEntity.all", query = "SELECT c FROM ClientEntity c")
 @Table(name = "client", schema = "sbd", catalog = "")
 public class ClientEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -99,5 +100,17 @@ public class ClientEntity {
         result = 31 * result + (surname != null ? surname.hashCode() : 0);
         result = 31 * result + (address != null ? address.hashCode() : 0);
         return result;
+    }
+
+    @Override
+    public String toString() {
+        return "ClientEntity{" +
+                "clientId=" + clientId +
+                ", email='" + email + '\'' +
+                ", phoneNr='" + phoneNr + '\'' +
+                ", name='" + name + '\'' +
+                ", surname='" + surname + '\'' +
+                ", address='" + address + '\'' +
+                '}';
     }
 }
