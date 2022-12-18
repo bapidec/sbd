@@ -17,9 +17,6 @@ public class OrderProductEntity {
     @Basic
     @Column(name = "quantity")
     private int quantity;
-    @Basic
-    @Column(name = "order_product_id")
-    private int orderProductId;
 
     public int getProductProductId() {
         return productProductId;
@@ -45,14 +42,6 @@ public class OrderProductEntity {
         this.quantity = quantity;
     }
 
-    public int getOrderProductId() {
-        return orderProductId;
-    }
-
-    public void setOrderProductId(int orderProductId) {
-        this.orderProductId = orderProductId;
-    }
-
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -63,7 +52,6 @@ public class OrderProductEntity {
         if (productProductId != that.productProductId) return false;
         if (orderOrderId != that.orderOrderId) return false;
         if (quantity != that.quantity) return false;
-        if (orderProductId != that.orderProductId) return false;
 
         return true;
     }
@@ -73,7 +61,6 @@ public class OrderProductEntity {
         int result = productProductId;
         result = 31 * result + orderOrderId;
         result = 31 * result + quantity;
-        result = 31 * result + orderProductId;
         return result;
     }
 }
