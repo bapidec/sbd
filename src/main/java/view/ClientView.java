@@ -12,7 +12,10 @@ public class ClientView extends JPanel {
     JTextField addressField = new JTextField();
 
     public ClientView() {
-        super(new GridLayout(0 ,2));
+        super();
+        GridLayout gridLayout = new GridLayout(0, 2);
+        gridLayout.setVgap(1);
+        super.setLayout(gridLayout);
 
         firstNameField.setEditable(false);
         lastNameField.setEditable(false);

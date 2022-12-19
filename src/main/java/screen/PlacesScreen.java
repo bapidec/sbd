@@ -1,7 +1,8 @@
 package screen;
 
-import dialogs.ClientDialog;
-import view.ClientView;
+import dialogs.PlacesDialog;
+import view.PlaceView;
+import view.SupplierView;
 
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
@@ -11,9 +12,9 @@ import java.awt.event.ActionListener;
 import java.util.ArrayList;
 import java.util.List;
 
-public class ClientsScreen extends JPanel {
-    JTable clientsTable;
-    ClientView clientView = new ClientView();
+public class PlacesScreen extends JPanel{
+    JTable placesTable;
+    PlaceView placeView = new PlaceView();
     JComboBox filtersBox = new JComboBox<>();
     JComboBox filterValueBox = new JComboBox<>();
     JTextField filterValueField = new JTextField();
@@ -25,39 +26,39 @@ public class ClientsScreen extends JPanel {
     JPanel tablePanel = new JPanel(new BorderLayout());
     JPanel filtersPanel = new JPanel(new BorderLayout());
     JPanel detailsPanel = new JPanel(new BorderLayout());
-    public ClientsScreen() {
+    public PlacesScreen() {
         super(new GridLayout(0,2));
 
         createTable();
         createFilters();
         createDetails();
-        this.tablePanel.setBorder(BorderFactory.createTitledBorder("Clients table"));
-        this.detailsPanel.setBorder(BorderFactory.createTitledBorder("Client details"));
+        this.tablePanel.setBorder(BorderFactory.createTitledBorder("Places table"));
+        this.detailsPanel.setBorder(BorderFactory.createTitledBorder("Place details"));
         this.add(tablePanel);
         this.add(detailsPanel);
 
         this.addButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                JFrame frame = (JFrame) SwingUtilities.getWindowAncestor(ClientsScreen.this);
+                JFrame frame = (JFrame) SwingUtilities.getWindowAncestor(PlacesScreen.this);
                 addButton.setEnabled(false);
-                ClientDialog clientDialog = new ClientDialog(frame, addButton, "Add client");
+                PlacesDialog placesDialog = new PlacesDialog(frame, addButton, "Add building");
             }
         });
 
         this.editButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                JFrame frame = (JFrame) SwingUtilities.getWindowAncestor(ClientsScreen.this);
+                JFrame frame = (JFrame) SwingUtilities.getWindowAncestor(PlacesScreen.this);
                 editButton.setEnabled(false);
-                ClientDialog clientDialog = new ClientDialog(frame, editButton, "Edit client");
+                PlacesDialog placesDialog = new PlacesDialog(frame, addButton, "Edit building");
             }
         });
 
     }
 
     private void createDetails() {
-        this.detailsPanel.add(this.clientView);
+        this.detailsPanel.add(this.placeView);
         JPanel buttonsPanel = new JPanel();
         buttonsPanel.add(this.addButton);
         buttonsPanel.add(this.deleteButton);
@@ -68,7 +69,7 @@ public class ClientsScreen extends JPanel {
     private void createFilters() {
         JPanel filterByOrdersPanel = new JPanel(new GridLayout(0, 2));
         filterByOrdersPanel.add(this.filtersBox);
-        filterByOrdersPanel.add(this.filterValueField);
+        filterByOrdersPanel.add(this.filterValueBox);
 
         this.filtersPanel.add(filterByOrdersPanel);
         this.filtersPanel.add(clearFiltersButton, BorderLayout.SOUTH);
@@ -78,10 +79,10 @@ public class ClientsScreen extends JPanel {
     }
 
     private void createTable() {
-        String[] columnNames = {"Id", "First name", "Last name"};
+        String[] columnNames = {"Id", "Location", "Type"};
         List<String[]> rows = new ArrayList<>();
 
-        rows.add(new String[]{String.valueOf(1), "Bartek", "Dec", "gmail", "666666666", "bialystok"});
+        rows.add(new String[]{String.valueOf(1), "Białystok", "Shop"});
 
         Object[][] data = new Object[rows.size()][columnNames.length];
 
@@ -94,13 +95,14 @@ public class ClientsScreen extends JPanel {
                 return false;
             }
         };
-        this.clientsTable = new JTable(model);
+        this.placesTable = new JTable(model);
 
-        clientsTable.setFillsViewportHeight(true);
-        clientsTable.setCellSelectionEnabled(false);
-        clientsTable.setRowSelectionAllowed(true);
+        placesTable.setFillsViewportHeight(true);
+        placesTable.setCellSelectionEnabled(false);
+        placesTable.setRowSelectionAllowed(true);
 
-        JScrollPane tablePane = new JScrollPane(this.clientsTable);
+        JScrollPane tablePane = new JScrollPane(this.placesTable);
         this.tablePanel.add(tablePane);
     }
 }
+

@@ -2,6 +2,7 @@ package screen;
 
 import dialogs.ClientDialog;
 import view.ClientView;
+import view.ProductGenreView;
 
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
@@ -11,9 +12,9 @@ import java.awt.event.ActionListener;
 import java.util.ArrayList;
 import java.util.List;
 
-public class ClientsScreen extends JPanel {
+public class ProductGenresScreen extends JPanel {
     JTable clientsTable;
-    ClientView clientView = new ClientView();
+    ProductGenreView genreView = new ProductGenreView();
     JComboBox filtersBox = new JComboBox<>();
     JComboBox filterValueBox = new JComboBox<>();
     JTextField filterValueField = new JTextField();
@@ -25,7 +26,7 @@ public class ClientsScreen extends JPanel {
     JPanel tablePanel = new JPanel(new BorderLayout());
     JPanel filtersPanel = new JPanel(new BorderLayout());
     JPanel detailsPanel = new JPanel(new BorderLayout());
-    public ClientsScreen() {
+    public ProductGenresScreen() {
         super(new GridLayout(0,2));
 
         createTable();
@@ -39,7 +40,7 @@ public class ClientsScreen extends JPanel {
         this.addButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                JFrame frame = (JFrame) SwingUtilities.getWindowAncestor(ClientsScreen.this);
+                JFrame frame = (JFrame) SwingUtilities.getWindowAncestor(ProductGenresScreen.this);
                 addButton.setEnabled(false);
                 ClientDialog clientDialog = new ClientDialog(frame, addButton, "Add client");
             }
@@ -48,7 +49,7 @@ public class ClientsScreen extends JPanel {
         this.editButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                JFrame frame = (JFrame) SwingUtilities.getWindowAncestor(ClientsScreen.this);
+                JFrame frame = (JFrame) SwingUtilities.getWindowAncestor(ProductGenresScreen.this);
                 editButton.setEnabled(false);
                 ClientDialog clientDialog = new ClientDialog(frame, editButton, "Edit client");
             }
@@ -57,7 +58,7 @@ public class ClientsScreen extends JPanel {
     }
 
     private void createDetails() {
-        this.detailsPanel.add(this.clientView);
+        this.detailsPanel.add(this.genreView);
         JPanel buttonsPanel = new JPanel();
         buttonsPanel.add(this.addButton);
         buttonsPanel.add(this.deleteButton);
@@ -78,10 +79,10 @@ public class ClientsScreen extends JPanel {
     }
 
     private void createTable() {
-        String[] columnNames = {"Id", "First name", "Last name"};
+        String[] columnNames = {"Id", "Name"};
         List<String[]> rows = new ArrayList<>();
 
-        rows.add(new String[]{String.valueOf(1), "Bartek", "Dec", "gmail", "666666666", "bialystok"});
+        rows.add(new String[]{String.valueOf(1), "Fantasy"});
 
         Object[][] data = new Object[rows.size()][columnNames.length];
 
@@ -104,3 +105,4 @@ public class ClientsScreen extends JPanel {
         this.tablePanel.add(tablePane);
     }
 }
+
