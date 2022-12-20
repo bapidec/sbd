@@ -1,6 +1,7 @@
 package screen;
 
 import dialogs.ClientDialog;
+import dialogs.SupplierDialog;
 import view.SupplierView;
 
 import javax.swing.*;
@@ -41,7 +42,7 @@ public class SuppliersScreen extends JPanel{
             public void actionPerformed(ActionEvent e) {
                 JFrame frame = (JFrame) SwingUtilities.getWindowAncestor(SuppliersScreen.this);
                 addButton.setEnabled(false);
-                ClientDialog clientDialog = new ClientDialog(frame, addButton, "Add client");
+                SupplierDialog clientDialog = new SupplierDialog(frame, "Add supplier");
             }
         });
 

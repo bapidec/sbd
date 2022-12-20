@@ -1,6 +1,7 @@
 package screen;
 
 import dialogs.ClientDialog;
+import dialogs.ProductGenreDialog;
 import view.ClientView;
 import view.ProductGenreView;
 
@@ -42,7 +43,7 @@ public class ProductGenresScreen extends JPanel {
             public void actionPerformed(ActionEvent e) {
                 JFrame frame = (JFrame) SwingUtilities.getWindowAncestor(ProductGenresScreen.this);
                 addButton.setEnabled(false);
-                ClientDialog clientDialog = new ClientDialog(frame, addButton, "Add client");
+                ProductGenreDialog productGenreDialog = new ProductGenreDialog(frame, "Add genre");
             }
         });
 

@@ -13,6 +13,7 @@ public class PlacesDialog extends JDialog {
     JTextField employeeLimitField = new JTextField();
     JTextField maintenanceCostField = new JTextField();
     JPanel typeField = new JPanel();
+    JComboBox supplier = new JComboBox();
     JButton confirmButton = new JButton("Confirm");
     JButton cancelButton = new JButton("Cancel");
 
@@ -40,6 +41,9 @@ public class PlacesDialog extends JDialog {
 
         formPanel.add(new JLabel("Monthly maintenance cost: "));
         formPanel.add(maintenanceCostField);
+
+        formPanel.add(new JLabel("Supplier: "));
+        formPanel.add(supplier);
 
         formPanel.add(new JLabel("Building role: "));
         typeField.add(new JRadioButton("Warehouse"));

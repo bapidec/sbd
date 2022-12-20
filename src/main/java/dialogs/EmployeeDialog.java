@@ -50,7 +50,7 @@ public class EmployeeDialog extends JDialog {
 
 
         buttonsPanel.add(confirmButton);
-        formPanel.add(cancelButton);
+        buttonsPanel.add(cancelButton);
 
         this.add(formPanel);
         this.add(buttonsPanel, BorderLayout.SOUTH);

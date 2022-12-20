@@ -20,6 +20,14 @@ public class Main {
         mainFrame.setLocationRelativeTo(null);
         mainFrame.setVisible(true);
 
+        JMenuBar menuBar = new JMenuBar();
+        JMenu menuDelete = new JMenu("Delete");
+        menuDelete.add(new JMenuItem("Image"));
+        menuDelete.add(new JMenuItem("Keyword"));
+
+        menuBar.add(menuDelete);
+        mainFrame.setJMenuBar(menuBar);
+
         JTabbedPane tabbedPane = new JTabbedPane();
         tabbedPane.addTab("Clients", new ClientsScreen());
         mainFrame.add(tabbedPane);

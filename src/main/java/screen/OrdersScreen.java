@@ -1,6 +1,7 @@
 package screen;
 
 import dialogs.ClientDialog;
+import dialogs.OrderDialog;
 import view.OrderView;
 import view.PlaceView;
 
@@ -42,7 +43,7 @@ public class OrdersScreen extends JPanel {
             public void actionPerformed(ActionEvent e) {
                 JFrame frame = (JFrame) SwingUtilities.getWindowAncestor(OrdersScreen.this);
                 addButton.setEnabled(false);
-                ClientDialog clientDialog = new ClientDialog(frame, addButton, "Add client");
+                OrderDialog clientDialog = new OrderDialog(frame, "Add order");
             }
         });
 
