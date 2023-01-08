@@ -11,6 +11,7 @@ public class ShowImagesDialog extends JDialog{
 
     JButton nextButton = new JButton("Next");
     JButton previousButton = new JButton("Previous");
+    JButton removeButton = new JButton("Remove");
 
     JPanel imagePanel = new JPanel();
     JPanel buttonsPanel = new JPanel();
@@ -32,6 +33,7 @@ public class ShowImagesDialog extends JDialog{
 
         buttonsPanel.add(previousButton);
         buttonsPanel.add(nextButton);
+        buttonsPanel.add(removeButton);
 
         this.add(picLabel);
         this.add(buttonsPanel, BorderLayout.SOUTH);

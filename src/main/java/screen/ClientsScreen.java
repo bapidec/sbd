@@ -25,6 +25,8 @@ public class ClientsScreen extends JPanel {
     JPanel tablePanel = new JPanel(new BorderLayout());
     JPanel filtersPanel = new JPanel(new BorderLayout());
     JPanel detailsPanel = new JPanel(new BorderLayout());
+
+
     public ClientsScreen() {
         super(new GridLayout(0,2));
 
