@@ -1,6 +1,6 @@
 import entity.ClientEntity;
 import jakarta.persistence.*;
-import screen.ClientsScreen;
+import screen.*;
 import view.ClientView;
 
 import javax.swing.*;
@@ -30,6 +30,13 @@ public class Main {
 
         JTabbedPane tabbedPane = new JTabbedPane();
         tabbedPane.addTab("Clients", new ClientsScreen());
+        tabbedPane.addTab("Employees", new EmployeeScreen());
+        tabbedPane.addTab("Places", new PlacesScreen());
+        tabbedPane.addTab("Suppliers", new SuppliersScreen());
+        tabbedPane.addTab("Genres", new ProductGenresScreen());
+        tabbedPane.addTab("Contracts", new ContractScreen());
+        tabbedPane.addTab("Orders", new OrdersScreen());
+        tabbedPane.addTab("Products", new ProductsScreen());
         mainFrame.add(tabbedPane);
         mainFrame.pack();
 

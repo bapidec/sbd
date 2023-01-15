@@ -5,6 +5,8 @@ import jakarta.persistence.*;
 import java.sql.Timestamp;
 
 @Entity
+@NamedQuery(name = "ContractEntity.all", query = "FROM ContractEntity c")
+@NamedQuery(name = "ContractEntity.byId", query = "FROM ContractEntity c WHERE c.contractId = :contractId")
 @Table(name = "contract", schema = "sbd", catalog = "")
 public class ContractEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)

@@ -3,6 +3,7 @@ package entity;
 import jakarta.persistence.*;
 
 @Entity
+@NamedQuery(name = "PlaceEntity.ids", query = "SELECT p.placeId FROM PlaceEntity p")
 @Table(name = "place", schema = "sbd", catalog = "")
 public class PlaceEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)

@@ -1,11 +1,20 @@
 package screen;
 
+import contractBuilder.ContractBuilderHTML;
+import contractBuilder.ContractBuilderPdf;
+import controller.ContractController;
 import dialogs.ContractDialog;
 import dialogs.PlacesDialog;
+import entity.ContractEntity;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.EntityManagerFactory;
+import jakarta.persistence.Persistence;
+import jakarta.persistence.TypedQuery;
 import view.ContractView;
-import view.PlaceView;
 
 import javax.swing.*;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
 import javax.swing.table.DefaultTableModel;
 import java.awt.*;
 import java.awt.event.ActionEvent;
@@ -23,10 +32,14 @@ public class ContractScreen extends JPanel {
     JButton addButton = new JButton("Add");
     JButton deleteButton = new JButton("Delete");
     JButton editButton = new JButton("Edit");
+    JButton generateHTMLButton = new JButton("Generate HTML");
+    JButton generatePdfButton = new JButton("Generate Pdf");
 
     JPanel tablePanel = new JPanel(new BorderLayout());
     JPanel filtersPanel = new JPanel(new BorderLayout());
     JPanel detailsPanel = new JPanel(new BorderLayout());
+    private ContractEntity selectedContract;
+
     public ContractScreen() {
         super(new GridLayout(0,2));
 
@@ -43,7 +56,7 @@ public class ContractScreen extends JPanel {
             public void actionPerformed(ActionEvent e) {
                 JFrame frame = (JFrame) SwingUtilities.getWindowAncestor(ContractScreen.this);
                 addButton.setEnabled(false);
-                ContractDialog contractDialog = new ContractDialog(frame, "Add contract");
+                ContractDialog contractDialog = new ContractDialog(frame, "Add contract", ContractScreen.this);
             }
         });
 
@@ -52,10 +65,48 @@ public class ContractScreen extends JPanel {
             public void actionPerformed(ActionEvent e) {
                 JFrame frame = (JFrame) SwingUtilities.getWindowAncestor(ContractScreen.this);
                 editButton.setEnabled(false);
-                PlacesDialog placesDialog = new PlacesDialog(frame, addButton, "Edit building");
+                new PlacesDialog(frame, addButton, "Edit building");
             }
         });
 
+        this.generateHTMLButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                JFrame frame = (JFrame) SwingUtilities.getWindowAncestor(ContractScreen.this);
+                if(selectedContract == null) {
+                    noContractSelectedWarning(frame);
+                    return;
+                }
+                ContractBuilderHTML contractBuilder = new ContractBuilderHTML(frame, selectedContract);
+                contractBuilder.buildTitle();
+                contractBuilder.buildContents();
+                contractBuilder.buildSignature("Janusz Szef");
+                contractBuilder.getHTMLDocument();
+            }
+        });
+
+        this.generatePdfButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                JFrame frame = (JFrame) SwingUtilities.getWindowAncestor(ContractScreen.this);
+                if(selectedContract == null) {
+                    noContractSelectedWarning(frame);
+                    return;
+                }
+                ContractBuilderPdf contractBuilder = new ContractBuilderPdf(frame, selectedContract);
+                contractBuilder.buildTitle();
+                contractBuilder.getPdfDocument();
+            }
+        });
+
+    }
+
+    private static void noContractSelectedWarning(JFrame frame) {
+        JOptionPane.showMessageDialog(frame, "Please select contract first", "No contract selected", JOptionPane.WARNING_MESSAGE);
+    }
+
+    public JButton getAddButton() {
+        return addButton;
     }
 
     private void createDetails() {
@@ -64,6 +115,8 @@ public class ContractScreen extends JPanel {
         buttonsPanel.add(this.addButton);
         buttonsPanel.add(this.deleteButton);
         buttonsPanel.add(this.editButton);
+        buttonsPanel.add(this.generateHTMLButton);
+        buttonsPanel.add(this.generatePdfButton);
         this.detailsPanel.add(buttonsPanel, BorderLayout.SOUTH);
     }
 
@@ -83,7 +136,21 @@ public class ContractScreen extends JPanel {
         String[] columnNames = {"Id", "Start date", "Employee"};
         List<String[]> rows = new ArrayList<>();
 
-        rows.add(new String[]{String.valueOf(1), "10/12/2022", "Bartek Dec"});
+        EntityManagerFactory entityManagerFactory = Persistence.createEntityManagerFactory("default");
+        EntityManager entityManager = entityManagerFactory.createEntityManager();
+        TypedQuery<ContractEntity> allContracts = entityManager.createNamedQuery("ContractEntity.all", ContractEntity.class);
+
+        for (ContractEntity c: allContracts.getResultList()) {
+            int id = c.getContractId();
+            String date_start = String.valueOf(c.getDateStart());
+            int employee_id = c.getEmployeeEmployeeId();
+            TypedQuery<String> contractEmployeeQuery = entityManager.createNamedQuery("EmployeeEntity.nameById", String.class);
+
+            contractEmployeeQuery.setParameter("employee_id", employee_id);
+
+            String employeeName = String.valueOf(contractEmployeeQuery.getSingleResult());
+            rows.add(new String[]{String.valueOf(id), date_start, employeeName});
+        }
 
         Object[][] data = new Object[rows.size()][columnNames.length];
 
@@ -98,6 +165,24 @@ public class ContractScreen extends JPanel {
         };
         this.contractsTable = new JTable(model);
 
+        contractsTable.getSelectionModel().addListSelectionListener(new ListSelectionListener(){
+            public void valueChanged(ListSelectionEvent event) {
+                int cId= Integer.valueOf(contractsTable.getValueAt(contractsTable.getSelectedRow(), 0).toString());
+                String eName = (String) contractsTable.getValueAt(contractsTable.getSelectedRow(), 2);
+
+                EntityManagerFactory entityManagerFactory = Persistence.createEntityManagerFactory("default");
+                EntityManager entityManager = entityManagerFactory.createEntityManager();
+                TypedQuery<ContractEntity> contractById = entityManager.createNamedQuery("ContractEntity.byId", ContractEntity.class);
+
+                contractById.setParameter("contractId", cId);
+
+                selectedContract = contractById.getSingleResult();
+
+                ContractController contractController = new ContractController(selectedContract,contractView, eName);
+                contractController.updateContractView();
+            }
+        });
+
         contractsTable.setFillsViewportHeight(true);
         contractsTable.setCellSelectionEnabled(false);
         contractsTable.setRowSelectionAllowed(true);
@@ -105,5 +190,27 @@ public class ContractScreen extends JPanel {
         JScrollPane tablePane = new JScrollPane(this.contractsTable);
         this.tablePanel.add(tablePane);
     }
+
+    public void refreshTable() {
+        DefaultTableModel model = (DefaultTableModel) contractsTable.getModel();
+        model.setRowCount(0);
+
+        EntityManagerFactory entityManagerFactory = Persistence.createEntityManagerFactory("default");
+        EntityManager entityManager = entityManagerFactory.createEntityManager();
+        TypedQuery<ContractEntity> allContracts = entityManager.createNamedQuery("ContractEntity.all", ContractEntity.class);
+
+        for (ContractEntity c: allContracts.getResultList()) {
+            int id = c.getContractId();
+            String date_start = String.valueOf(c.getDateStart());
+            int employee_id = c.getEmployeeEmployeeId();
+            TypedQuery<String> contractEmployeeQuery = entityManager.createNamedQuery("EmployeeEntity.nameById", String.class);
+
+            contractEmployeeQuery.setParameter("employee_id", employee_id);
+
+            String employeeName = String.valueOf(contractEmployeeQuery.getSingleResult());
+            model.addRow(new String[]{String.valueOf(id), date_start, employeeName});
+        }
+    }
+
 }
 

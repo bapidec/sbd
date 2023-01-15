@@ -1,9 +1,16 @@
 package dialogs;
 
+import entity.ContractEntity;
+import jakarta.persistence.*;
+import screen.ContractScreen;
+
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import java.sql.Timestamp;
 
 public class ContractDialog extends JDialog {
     JTextField startDate = new JTextField();
@@ -14,8 +21,12 @@ public class ContractDialog extends JDialog {
     JComboBox place = new JComboBox<>();
     JButton confirmButton = new JButton("Confirm");
     JButton cancelButton = new JButton("Cancel");
+    JButton addButton;
 
-    public ContractDialog(JFrame frame, String title){
+    EntityManagerFactory entityManagerFactory = Persistence.createEntityManagerFactory("default");
+    EntityManager entityManager = entityManagerFactory.createEntityManager();
+
+    public ContractDialog(JFrame frame, String title, ContractScreen contractScreen){
         super(frame, title);
         super.setVisible(true);
         super.setModal(true);
@@ -24,6 +35,25 @@ public class ContractDialog extends JDialog {
         super.setPreferredSize(new Dimension(400,300));
         super.setLocationRelativeTo(null);
         super.setLayout(new BorderLayout());
+
+        this.addButton = contractScreen.getAddButton();
+
+        addEmployees();
+        addPlaces();
+
+        this.confirmButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                addContract(contractScreen);
+            }
+        });
+
+        this.cancelButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                close();
+            }
+        });
 
         JPanel formPanel = new JPanel(new GridLayout(0, 2));
         JPanel buttonsPanel = new JPanel();
@@ -54,6 +84,56 @@ public class ContractDialog extends JDialog {
         this.pack();
 
 
+
+    }
+
+    private void addEmployees() {
+        TypedQuery<Integer> employeeIds = entityManager.createNamedQuery("EmployeeEntity.ids", Integer.class);
+        for(Integer i : employeeIds.getResultList()) {
+            this.employee.addItem(i);
+        }
+    }
+
+    private void addPlaces() {
+        TypedQuery<Integer> placeIds = entityManager.createNamedQuery("PlaceEntity.ids", Integer.class);
+        for(Integer i : placeIds.getResultList()) {
+            this.place.addItem(i);
+        }
+    }
+
+    private void close() {
+        addButton.setEnabled(true);
+        ContractDialog.super.dispose();
+    }
+
+    private void addContract(ContractScreen contractScreen) {
+        EntityTransaction transaction = entityManager.getTransaction();
+
+        try {
+            transaction.begin();
+
+            ContractEntity newContract = new ContractEntity();
+            newContract.setEmployeeEmployeeId((Integer) this.employee.getSelectedItem());
+            newContract.setPlacePlaceId((Integer) this.place.getSelectedItem());
+            newContract.setPaymentAmount(Double.parseDouble(this.paymentAmount.getText()));
+            newContract.setType(this.type.getText());
+            newContract.setDateStart(Timestamp.valueOf(this.startDate.getText()+" 00:00:00"));
+            newContract.setDateEnd(Timestamp.valueOf(this.endDate.getText()+" 00:00:00"));
+
+            entityManager.persist(newContract);
+            transaction.commit();
+
+            contractScreen.refreshTable();
+
+        } finally {
+            if(transaction.isActive()) {
+                transaction.rollback();
+            }
+            entityManager.close();
+            entityManagerFactory.close();
+        }
+
+        close();
     }
 }
 
