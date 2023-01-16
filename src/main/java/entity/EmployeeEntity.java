@@ -8,6 +8,7 @@ import java.sql.Timestamp;
 @Table(name = "employee", schema = "sbd", catalog = "")
 @NamedQuery(name = "EmployeeEntity.ids", query = "SELECT e.employeeId FROM EmployeeEntity e")
 @NamedQuery(name = "EmployeeEntity.nameById", query = "SELECT e.name FROM EmployeeEntity e WHERE e.id = :employee_id")
+@NamedQuery(name = "EmployeeEntity.surnameById", query = "SELECT e.surname FROM EmployeeEntity e WHERE e.id = :employee_id")
 public class EmployeeEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Id

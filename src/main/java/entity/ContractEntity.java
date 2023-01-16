@@ -88,6 +88,20 @@ public class ContractEntity {
         this.employeeEmployeeId = employeeEmployeeId;
     }
 
+    public String getEmployeeName(EntityManager entityManager) {
+        TypedQuery<String> contractEmployeeQuery = entityManager.createNamedQuery("EmployeeEntity.nameById", String.class);
+        contractEmployeeQuery.setParameter("employee_id", this.getEmployeeEmployeeId());
+        String employeeName = String.valueOf(contractEmployeeQuery.getSingleResult());
+        return employeeName;
+    }
+
+    public String getEmployeeSurname(EntityManager entityManager) {
+        TypedQuery<String> contractEmployeeQuery = entityManager.createNamedQuery("EmployeeEntity.surnameById", String.class);
+        contractEmployeeQuery.setParameter("employee_id", this.getEmployeeEmployeeId());
+        String employeeName = String.valueOf(contractEmployeeQuery.getSingleResult());
+        return employeeName;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;

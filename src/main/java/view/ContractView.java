@@ -42,4 +42,12 @@ public class ContractView extends JPanel {
         typeField.setText(type);
         employeeField.setText(employee);
     }
+
+    public void clear() {
+        paymentAmountField.setText("");
+        dateStartField.setText("");
+        dateEndField.setText("");
+        typeField.setText("");
+        employeeField.setText("");
+    }
 }

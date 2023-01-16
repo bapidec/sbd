@@ -1,6 +1,8 @@
 package contractBuilder;
 
 import entity.ContractEntity;
+import entityFactory.DefaultEntityManagerFactory;
+import jakarta.persistence.EntityManager;
 import org.apache.commons.io.FileUtils;
 
 import javax.swing.*;
@@ -32,9 +34,10 @@ public class ContractBuilderHTML implements ContractBuilder {
 
     @Override
     public void buildContents() {
+        EntityManager entityManager = DefaultEntityManagerFactory.getInstance().createEntityManager();
         this.htmlString = this.htmlString.replace(
                 "$content",
-                "Blah blah blah employee name obowiązuje od " + contract.getDateStart() + " do " + contract.getDateEnd() + ", na stanowisko " + contract.getType() + ".");
+                "Zatrudniony: " + contract.getEmployeeName(entityManager) + " " + contract.getEmployeeSurname(entityManager) + "<br><br>Okres zatrudnienia: " + contract.getDateStart() + " do " + contract.getDateEnd() + "<br><br>Stanowisko: " + contract.getType() + "<br><br>");
     }
 
     @Override

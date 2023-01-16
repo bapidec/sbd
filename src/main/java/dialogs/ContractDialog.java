@@ -1,6 +1,7 @@
 package dialogs;
 
 import entity.ContractEntity;
+import entityFactory.DefaultEntityManagerFactory;
 import jakarta.persistence.*;
 import screen.ContractScreen;
 
@@ -23,8 +24,7 @@ public class ContractDialog extends JDialog {
     JButton cancelButton = new JButton("Cancel");
     JButton addButton;
 
-    EntityManagerFactory entityManagerFactory = Persistence.createEntityManagerFactory("default");
-    EntityManager entityManager = entityManagerFactory.createEntityManager();
+    EntityManager entityManager = DefaultEntityManagerFactory.getInstance().createEntityManager();
 
     public ContractDialog(JFrame frame, String title, ContractScreen contractScreen){
         super(frame, title);
@@ -130,7 +130,6 @@ public class ContractDialog extends JDialog {
                 transaction.rollback();
             }
             entityManager.close();
-            entityManagerFactory.close();
         }
 
         close();

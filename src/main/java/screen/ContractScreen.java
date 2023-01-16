@@ -6,10 +6,8 @@ import controller.ContractController;
 import dialogs.ContractDialog;
 import dialogs.PlacesDialog;
 import entity.ContractEntity;
-import jakarta.persistence.EntityManager;
-import jakarta.persistence.EntityManagerFactory;
-import jakarta.persistence.Persistence;
-import jakarta.persistence.TypedQuery;
+import entityFactory.DefaultEntityManagerFactory;
+import jakarta.persistence.*;
 import view.ContractView;
 
 import javax.swing.*;
@@ -60,6 +58,34 @@ public class ContractScreen extends JPanel {
             }
         });
 
+        this.deleteButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                EntityManager entityManager = DefaultEntityManagerFactory.getInstance().createEntityManager();
+                EntityTransaction entityTransaction = entityManager.getTransaction();
+
+                try {
+                    entityTransaction.begin();
+
+                    Query deleteContractQuery = entityManager.createQuery("DELETE FROM ContractEntity c WHERE c.contractId = :contractId");
+                    deleteContractQuery.setParameter("contractId", selectedContract.getContractId());
+                    deleteContractQuery.executeUpdate();
+
+                    entityTransaction.commit();
+
+                    entityManager.close();
+
+                    contractsTable.clearSelection();
+                    refreshTable();
+                } finally {
+                    if(entityTransaction.isActive()) {
+                        entityTransaction.rollback();
+                    }
+                    entityManager.close();
+                }
+            }
+        });
+
         this.editButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -93,8 +119,12 @@ public class ContractScreen extends JPanel {
                     noContractSelectedWarning(frame);
                     return;
                 }
+
                 ContractBuilderPdf contractBuilder = new ContractBuilderPdf(frame, selectedContract);
                 contractBuilder.buildTitle();
+                contractBuilder.buildContents();
+                contractBuilder.buildSignature("Janusz Szef");
+
                 contractBuilder.getPdfDocument();
             }
         });
@@ -136,19 +166,14 @@ public class ContractScreen extends JPanel {
         String[] columnNames = {"Id", "Start date", "Employee"};
         List<String[]> rows = new ArrayList<>();
 
-        EntityManagerFactory entityManagerFactory = Persistence.createEntityManagerFactory("default");
-        EntityManager entityManager = entityManagerFactory.createEntityManager();
+        EntityManager entityManager = DefaultEntityManagerFactory.getInstance().createEntityManager();
         TypedQuery<ContractEntity> allContracts = entityManager.createNamedQuery("ContractEntity.all", ContractEntity.class);
 
         for (ContractEntity c: allContracts.getResultList()) {
             int id = c.getContractId();
             String date_start = String.valueOf(c.getDateStart());
             int employee_id = c.getEmployeeEmployeeId();
-            TypedQuery<String> contractEmployeeQuery = entityManager.createNamedQuery("EmployeeEntity.nameById", String.class);
-
-            contractEmployeeQuery.setParameter("employee_id", employee_id);
-
-            String employeeName = String.valueOf(contractEmployeeQuery.getSingleResult());
+            String employeeName = c.getEmployeeName(entityManager);
             rows.add(new String[]{String.valueOf(id), date_start, employeeName});
         }
 
@@ -167,11 +192,15 @@ public class ContractScreen extends JPanel {
 
         contractsTable.getSelectionModel().addListSelectionListener(new ListSelectionListener(){
             public void valueChanged(ListSelectionEvent event) {
+                if(contractsTable.getSelectedRow() == -1)
+                {
+                    contractView.clear();
+                    return;
+                }
                 int cId= Integer.valueOf(contractsTable.getValueAt(contractsTable.getSelectedRow(), 0).toString());
                 String eName = (String) contractsTable.getValueAt(contractsTable.getSelectedRow(), 2);
 
-                EntityManagerFactory entityManagerFactory = Persistence.createEntityManagerFactory("default");
-                EntityManager entityManager = entityManagerFactory.createEntityManager();
+                EntityManager entityManager = DefaultEntityManagerFactory.getInstance().createEntityManager();
                 TypedQuery<ContractEntity> contractById = entityManager.createNamedQuery("ContractEntity.byId", ContractEntity.class);
 
                 contractById.setParameter("contractId", cId);
@@ -195,8 +224,7 @@ public class ContractScreen extends JPanel {
         DefaultTableModel model = (DefaultTableModel) contractsTable.getModel();
         model.setRowCount(0);
 
-        EntityManagerFactory entityManagerFactory = Persistence.createEntityManagerFactory("default");
-        EntityManager entityManager = entityManagerFactory.createEntityManager();
+        EntityManager entityManager = DefaultEntityManagerFactory.getInstance().createEntityManager();
         TypedQuery<ContractEntity> allContracts = entityManager.createNamedQuery("ContractEntity.all", ContractEntity.class);
 
         for (ContractEntity c: allContracts.getResultList()) {
@@ -210,6 +238,7 @@ public class ContractScreen extends JPanel {
             String employeeName = String.valueOf(contractEmployeeQuery.getSingleResult());
             model.addRow(new String[]{String.valueOf(id), date_start, employeeName});
         }
+        entityManager.close();
     }
 
 }
