@@ -1,9 +1,8 @@
 package screen;
 
-import dialogs.ContractDialog;
+import dialogs.DialogFactory;
 import dialogs.PlacesDialog;
 import view.ContractView;
-import view.PlaceView;
 
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
@@ -43,7 +42,11 @@ public class ContractScreen extends JPanel {
             public void actionPerformed(ActionEvent e) {
                 JFrame frame = (JFrame) SwingUtilities.getWindowAncestor(ContractScreen.this);
                 addButton.setEnabled(false);
-                ContractDialog contractDialog = new ContractDialog(frame, "Add contract");
+                DialogFactory contractAddDialog = new DialogFactory();
+                contractAddDialog.setTitle("New Contract");
+                contractAddDialog.setButton(addButton);
+                contractAddDialog.setFrame(frame);
+                contractAddDialog.getDialog("Contract");
             }
         });
 

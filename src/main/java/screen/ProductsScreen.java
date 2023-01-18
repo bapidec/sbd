@@ -1,5 +1,6 @@
 package screen;
 
+import dialogs.DialogFactory;
 import dialogs.ShowImagesDialog;
 import dialogs.ProductDialog;
 import view.ProductsView;
@@ -44,7 +45,11 @@ public class ProductsScreen extends JPanel{
             public void actionPerformed(ActionEvent e) {
                 JFrame frame = (JFrame) SwingUtilities.getWindowAncestor(ProductsScreen.this);
                 addButton.setEnabled(false);
-                ProductDialog productDialog = new ProductDialog(frame, "Add product");
+                DialogFactory productAddDialog = new DialogFactory();
+                productAddDialog.setTitle("New Product");
+                productAddDialog.setButton(addButton);
+                productAddDialog.setFrame(frame);
+                productAddDialog.getDialog("Product");
             }
         });
         this.editButton.addActionListener(new ActionListener() {

@@ -1,6 +1,7 @@
 package screen;
 
 import dialogs.ClientDialog;
+import dialogs.DialogFactory;
 import view.ClientView;
 
 import javax.swing.*;
@@ -41,7 +42,11 @@ public class ClientsScreen extends JPanel {
             public void actionPerformed(ActionEvent e) {
                 JFrame frame = (JFrame) SwingUtilities.getWindowAncestor(ClientsScreen.this);
                 addButton.setEnabled(false);
-                ClientDialog clientDialog = new ClientDialog(frame, addButton, "Add client");
+                DialogFactory clientAddDialog = new DialogFactory();
+                clientAddDialog.setTitle("New Client");
+                clientAddDialog.setButton(addButton);
+                clientAddDialog.setFrame(frame);
+                clientAddDialog.getDialog("Client");
             }
         });
 

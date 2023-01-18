@@ -1,9 +1,8 @@
 package screen;
 
 import dialogs.ClientDialog;
-import dialogs.OrderDialog;
+import dialogs.DialogFactory;
 import view.OrderView;
-import view.PlaceView;
 
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
@@ -43,7 +42,11 @@ public class OrdersScreen extends JPanel {
             public void actionPerformed(ActionEvent e) {
                 JFrame frame = (JFrame) SwingUtilities.getWindowAncestor(OrdersScreen.this);
                 addButton.setEnabled(false);
-                OrderDialog clientDialog = new OrderDialog(frame, "Add order");
+                DialogFactory orderAddDialog = new DialogFactory();
+                orderAddDialog.setTitle("New Order");
+                orderAddDialog.setButton(addButton);
+                orderAddDialog.setFrame(frame);
+                orderAddDialog.getDialog("Order");
             }
         });
 

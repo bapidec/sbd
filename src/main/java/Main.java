@@ -1,15 +1,6 @@
-import entity.ClientEntity;
-import jakarta.persistence.*;
-import screen.ClientsScreen;
-import view.ClientView;
+import screen.*;
 
 import javax.swing.*;
-import javax.swing.table.DefaultTableModel;
-import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.util.ArrayList;
-import java.util.List;
 
 public class Main {
     public static void main(String[] args) {
@@ -33,6 +24,13 @@ public class Main {
         mainFrame.add(tabbedPane);
         mainFrame.pack();
 
+        tabbedPane.addTab("Employees", new EmployeeScreen());
+        tabbedPane.addTab("Places", new PlacesScreen());
+        tabbedPane.addTab("Suppliers", new SuppliersScreen());
+        tabbedPane.addTab("Genres", new ProductGenresScreen());
+        tabbedPane.addTab("Contracts", new ContractScreen());
+        tabbedPane.addTab("Orders", new OrdersScreen());
+        tabbedPane.addTab("Products", new ProductsScreen());
         //clientView.showClientsDetails("Bartek", "Dec", "666666666", "gmail", "bialy");
 
     }

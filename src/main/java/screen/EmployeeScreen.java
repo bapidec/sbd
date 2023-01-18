@@ -1,5 +1,6 @@
 package screen;
 
+import dialogs.DialogFactory;
 import dialogs.EmployeeDialog;
 import view.EmployeeView;
 
@@ -49,7 +50,11 @@ public class EmployeeScreen extends JPanel {
             public void actionPerformed(ActionEvent e) {
                 JFrame frame = (JFrame) SwingUtilities.getWindowAncestor(EmployeeScreen.this);
                 addButton.setEnabled(false);
-                EmployeeDialog employeeDialog = new EmployeeDialog(frame, addButton, "Add employee");
+                DialogFactory employeeAddDialog = new DialogFactory();
+                employeeAddDialog.setTitle("New Employee");
+                employeeAddDialog.setButton(addButton);
+                employeeAddDialog.setFrame(frame);
+                employeeAddDialog.getDialog("Employee");
 
             }
         });

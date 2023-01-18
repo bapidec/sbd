@@ -1,8 +1,8 @@
 package screen;
 
+import dialogs.DialogFactory;
 import dialogs.PlacesDialog;
 import view.PlaceView;
-import view.SupplierView;
 
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
@@ -42,7 +42,11 @@ public class PlacesScreen extends JPanel{
             public void actionPerformed(ActionEvent e) {
                 JFrame frame = (JFrame) SwingUtilities.getWindowAncestor(PlacesScreen.this);
                 addButton.setEnabled(false);
-                PlacesDialog placesDialog = new PlacesDialog(frame, addButton, "Add building");
+                DialogFactory placeAddDialog = new DialogFactory();
+                placeAddDialog.setTitle("New Place");
+                placeAddDialog.setButton(addButton);
+                placeAddDialog.setFrame(frame);
+                placeAddDialog.getDialog("Place");
             }
         });
 
