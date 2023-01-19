@@ -3,12 +3,13 @@ package screen;
 import contractBuilder.ContractBuilderHTML;
 import contractBuilder.ContractBuilderPdf;
 import controller.ContractController;
-import dialogs.ContractDialog;
-import dialogs.PlacesDialog;
+import controller.EntityController;
+import dialogs.EntityDialog;
 import entity.ContractEntity;
 import entityFactory.DefaultEntityManagerFactory;
 import jakarta.persistence.*;
 import view.ContractView;
+import view.EntityView;
 
 import javax.swing.*;
 import javax.swing.event.ListSelectionEvent;
@@ -20,7 +21,7 @@ import java.awt.event.ActionListener;
 import java.util.ArrayList;
 import java.util.List;
 
-public class ContractScreen extends JPanel {
+public class ContractScreen extends Screen {
     JTable contractsTable;
     ContractView contractView = new ContractView();
     JComboBox filtersBox = new JComboBox<>();
@@ -30,70 +31,20 @@ public class ContractScreen extends JPanel {
     JButton addButton = new JButton("Add");
     JButton deleteButton = new JButton("Delete");
     JButton editButton = new JButton("Edit");
-    JButton generateHTMLButton = new JButton("Generate HTML");
-    JButton generatePdfButton = new JButton("Generate Pdf");
+
 
     JPanel tablePanel = new JPanel(new BorderLayout());
     JPanel filtersPanel = new JPanel(new BorderLayout());
     JPanel detailsPanel = new JPanel(new BorderLayout());
     private ContractEntity selectedContract;
+    private JButton generatePdfButton;
+    private JButton generateHTMLButton;
 
     public ContractScreen() {
-        super(new GridLayout(0,2));
+        super();
 
-        createTable();
-        createFilters();
-        createDetails();
         this.tablePanel.setBorder(BorderFactory.createTitledBorder("Contracts table"));
         this.detailsPanel.setBorder(BorderFactory.createTitledBorder("Contract details"));
-        this.add(tablePanel);
-        this.add(detailsPanel);
-
-        this.addButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                JFrame frame = (JFrame) SwingUtilities.getWindowAncestor(ContractScreen.this);
-                addButton.setEnabled(false);
-                ContractDialog contractDialog = new ContractDialog(frame, "Add contract", ContractScreen.this);
-            }
-        });
-
-        this.deleteButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                EntityManager entityManager = DefaultEntityManagerFactory.getInstance().createEntityManager();
-                EntityTransaction entityTransaction = entityManager.getTransaction();
-
-                try {
-                    entityTransaction.begin();
-
-                    Query deleteContractQuery = entityManager.createQuery("DELETE FROM ContractEntity c WHERE c.contractId = :contractId");
-                    deleteContractQuery.setParameter("contractId", selectedContract.getContractId());
-                    deleteContractQuery.executeUpdate();
-
-                    entityTransaction.commit();
-
-                    entityManager.close();
-
-                    contractsTable.clearSelection();
-                    refreshTable();
-                } finally {
-                    if(entityTransaction.isActive()) {
-                        entityTransaction.rollback();
-                    }
-                    entityManager.close();
-                }
-            }
-        });
-
-        this.editButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                JFrame frame = (JFrame) SwingUtilities.getWindowAncestor(ContractScreen.this);
-                editButton.setEnabled(false);
-                new PlacesDialog(frame, addButton, "Edit building");
-            }
-        });
 
         this.generateHTMLButton.addActionListener(new ActionListener() {
             @Override
@@ -110,7 +61,6 @@ public class ContractScreen extends JPanel {
                 contractBuilder.getHTMLDocument();
             }
         });
-
         this.generatePdfButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -128,42 +78,33 @@ public class ContractScreen extends JPanel {
                 contractBuilder.getPdfDocument();
             }
         });
-
     }
 
     private static void noContractSelectedWarning(JFrame frame) {
         JOptionPane.showMessageDialog(frame, "Please select contract first", "No contract selected", JOptionPane.WARNING_MESSAGE);
     }
 
-    public JButton getAddButton() {
-        return addButton;
+    @Override
+    protected void addAdditionalButtons(JPanel buttonsPanel) {
+        this.generateHTMLButton = new JButton("Generate HTML");
+        this.generatePdfButton = new JButton("Generate Pdf");
     }
 
-    private void createDetails() {
-        this.detailsPanel.add(this.contractView);
-        JPanel buttonsPanel = new JPanel();
-        buttonsPanel.add(this.addButton);
-        buttonsPanel.add(this.deleteButton);
-        buttonsPanel.add(this.editButton);
-        buttonsPanel.add(this.generateHTMLButton);
-        buttonsPanel.add(this.generatePdfButton);
-        this.detailsPanel.add(buttonsPanel, BorderLayout.SOUTH);
+    @Override
+    protected Entity getSelectedEntity() {
+        int cId= Integer.valueOf(contractsTable.getValueAt(contractsTable.getSelectedRow(), 0).toString());
+        String eName = (String) contractsTable.getValueAt(contractsTable.getSelectedRow(), 2);
+
+        EntityManager entityManager = DefaultEntityManagerFactory.getInstance().createEntityManager();
+        TypedQuery<ContractEntity> contractById = entityManager.createNamedQuery("ContractEntity.byId", ContractEntity.class);
+
+        contractById.setParameter("contractId", cId);
+
+        return (Entity) contractById.getSingleResult();
     }
 
-    private void createFilters() {
-        JPanel filterByOrdersPanel = new JPanel(new GridLayout(0, 2));
-        filterByOrdersPanel.add(this.filtersBox);
-        filterByOrdersPanel.add(this.filterValueBox);
-
-        this.filtersPanel.add(filterByOrdersPanel);
-        this.filtersPanel.add(clearFiltersButton, BorderLayout.SOUTH);
-
-        this.filtersPanel.setBorder(BorderFactory.createTitledBorder("Filter"));
-        this.tablePanel.add(filtersPanel, BorderLayout.NORTH);
-    }
-
-    private void createTable() {
-        String[] columnNames = {"Id", "Start date", "Employee"};
+    @Override
+    protected Object[][] fetchDataFromDatabase(int columnsNr) {
         List<String[]> rows = new ArrayList<>();
 
         EntityManager entityManager = DefaultEntityManagerFactory.getInstance().createEntityManager();
@@ -177,49 +118,65 @@ public class ContractScreen extends JPanel {
             rows.add(new String[]{String.valueOf(id), date_start, employeeName});
         }
 
-        Object[][] data = new Object[rows.size()][columnNames.length];
+        Object[][] data = new Object[rows.size()][columnsNr];
 
         for(int i = 0; i < rows.size(); i++) {
             data[i] = rows.get(i);
         }
-        DefaultTableModel model = new DefaultTableModel(data, columnNames) {
-            @Override
-            public boolean isCellEditable(int row, int column) {
-                return false;
-            }
-        };
-        this.contractsTable = new JTable(model);
 
-        contractsTable.getSelectionModel().addListSelectionListener(new ListSelectionListener(){
-            public void valueChanged(ListSelectionEvent event) {
-                if(contractsTable.getSelectedRow() == -1)
-                {
-                    contractView.clear();
-                    return;
-                }
-                int cId= Integer.valueOf(contractsTable.getValueAt(contractsTable.getSelectedRow(), 0).toString());
-                String eName = (String) contractsTable.getValueAt(contractsTable.getSelectedRow(), 2);
-
-                EntityManager entityManager = DefaultEntityManagerFactory.getInstance().createEntityManager();
-                TypedQuery<ContractEntity> contractById = entityManager.createNamedQuery("ContractEntity.byId", ContractEntity.class);
-
-                contractById.setParameter("contractId", cId);
-
-                selectedContract = contractById.getSingleResult();
-
-                ContractController contractController = new ContractController(selectedContract,contractView, eName);
-                contractController.updateContractView();
-            }
-        });
-
-        contractsTable.setFillsViewportHeight(true);
-        contractsTable.setCellSelectionEnabled(false);
-        contractsTable.setRowSelectionAllowed(true);
-
-        JScrollPane tablePane = new JScrollPane(this.contractsTable);
-        this.tablePanel.add(tablePane);
+        return data;
     }
 
+    @Override
+    protected String[] createColumnNames() {
+        return new String[]{"Id", "Start date", "Employee"};
+    }
+
+    @Override
+    protected void deleteSelectedEntity() {
+        EntityManager entityManager = DefaultEntityManagerFactory.getInstance().createEntityManager();
+        EntityTransaction entityTransaction = entityManager.getTransaction();
+
+        try {
+            entityTransaction.begin();
+
+            Query deleteContractQuery = entityManager.createQuery("DELETE FROM ContractEntity c WHERE c.contractId = :contractId");
+            deleteContractQuery.setParameter("contractId", selectedContract.getContractId());
+            deleteContractQuery.executeUpdate();
+
+            entityTransaction.commit();
+
+            entityManager.close();
+
+            contractsTable.clearSelection();
+            refreshTable();
+        } finally {
+            if(entityTransaction.isActive()) {
+                entityTransaction.rollback();
+            }
+            entityManager.close();
+        }
+    }
+
+    @Override
+    protected EntityView createView() {
+
+        return new ContractView();
+    }
+
+    @Override
+    protected EntityController createController() {
+
+        return new ContractController();
+    }
+
+    @Override
+    protected EntityDialog createDialog() {
+
+        return new ;
+    }
+
+    @Override
     public void refreshTable() {
         DefaultTableModel model = (DefaultTableModel) contractsTable.getModel();
         model.setRowCount(0);
@@ -240,6 +197,8 @@ public class ContractScreen extends JPanel {
         }
         entityManager.close();
     }
+
+
 
 }
 

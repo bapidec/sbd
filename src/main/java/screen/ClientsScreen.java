@@ -13,7 +13,7 @@ import java.util.List;
 
 public class ClientsScreen extends JPanel {
     JTable clientsTable;
-    ClientView clientView = new ClientView();
+    ClientView clientView = new ClientView(); // factory
     JComboBox filtersBox = new JComboBox<>();
     JComboBox filterValueBox = new JComboBox<>();
     JTextField filterValueField = new JTextField();

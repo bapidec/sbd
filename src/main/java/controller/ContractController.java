@@ -3,7 +3,7 @@ package controller;
 import entity.ContractEntity;
 import view.ContractView;
 
-public class ContractController {
+public class ContractController implements EntityController{
     private ContractEntity contractEntity;
     private ContractView contractView;
     private String employeeName;
@@ -14,8 +14,8 @@ public class ContractController {
         this.employeeName = en;
     }
 
-    public void updateContractView() {
-        contractView.showContractDetails(
+    public void updateView() {
+        contractView.showDetails(
                 String.valueOf(contractEntity.getPaymentAmount()),
                 String.valueOf(contractEntity.getDateStart()),
                 String.valueOf(contractEntity.getDateEnd()),

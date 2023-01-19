@@ -4,6 +4,7 @@ import entity.ContractEntity;
 import entityFactory.DefaultEntityManagerFactory;
 import jakarta.persistence.*;
 import screen.ContractScreen;
+import screen.Screen;
 
 import javax.swing.*;
 import java.awt.*;
@@ -13,7 +14,7 @@ import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.sql.Timestamp;
 
-public class ContractDialog extends JDialog {
+public class ContractDialog extends JDialog implements EntityDialog {
     JTextField startDate = new JTextField();
     JTextField endDate = new JTextField();
     JTextField paymentAmount = new JTextField();
@@ -23,11 +24,13 @@ public class ContractDialog extends JDialog {
     JButton confirmButton = new JButton("Confirm");
     JButton cancelButton = new JButton("Cancel");
     JButton addButton;
+    ContractScreen contractScreen;
 
     EntityManager entityManager = DefaultEntityManagerFactory.getInstance().createEntityManager();
 
     public ContractDialog(JFrame frame, String title, ContractScreen contractScreen){
-        super(frame, title);
+        super(frame);
+        super.setTitle("aaa");
         super.setVisible(true);
         super.setModal(true);
         super.setAlwaysOnTop(true);
@@ -133,6 +136,16 @@ public class ContractDialog extends JDialog {
         }
 
         close();
+    }
+
+    @Override
+    public void setFrame(JFrame frame) {
+
+    }
+
+    @Override
+    public void setScreen(Screen screen) {
+
     }
 }
 

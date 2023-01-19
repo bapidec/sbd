@@ -5,7 +5,7 @@ import screen.ContractScreen;
 import javax.swing.*;
 import java.awt.*;
 
-public class ContractView extends JPanel {
+public class ContractView extends JPanel implements EntityView{
     JTextField paymentAmountField = new JTextField();
     JTextField dateStartField = new JTextField();
     JTextField dateEndField = new JTextField();
@@ -35,7 +35,7 @@ public class ContractView extends JPanel {
         super.add(new JLabel("Employee name: "));
         super.add(employeeField);
     }
-    public void showContractDetails(String paymentAmount, String dateStart, String dateEnd, String type, String employee){
+    public void showDetails(String paymentAmount, String dateStart, String dateEnd, String type, String employee){
         paymentAmountField.setText(paymentAmount);
         dateStartField.setText(dateStart);
         dateEndField.setText(dateEnd);
