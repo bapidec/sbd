@@ -4,6 +4,7 @@ import contractBuilder.ContractBuilderHTML;
 import contractBuilder.ContractBuilderPdf;
 import controller.ContractController;
 import controller.EntityController;
+import dialogs.ContractDialog;
 import dialogs.EntityDialog;
 import entity.ContractEntity;
 import entityFactory.DefaultEntityManagerFactory;
@@ -12,8 +13,6 @@ import view.ContractView;
 import view.EntityView;
 
 import javax.swing.*;
-import javax.swing.event.ListSelectionEvent;
-import javax.swing.event.ListSelectionListener;
 import javax.swing.table.DefaultTableModel;
 import java.awt.*;
 import java.awt.event.ActionEvent;
@@ -22,21 +21,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class ContractScreen extends Screen {
-    JTable contractsTable;
-    ContractView contractView = new ContractView();
-    JComboBox filtersBox = new JComboBox<>();
-    JComboBox filterValueBox = new JComboBox<>();
-    JTextField filterValueField = new JTextField();
-    JButton clearFiltersButton = new JButton("Clear");
-    JButton addButton = new JButton("Add");
-    JButton deleteButton = new JButton("Delete");
-    JButton editButton = new JButton("Edit");
-
-
-    JPanel tablePanel = new JPanel(new BorderLayout());
-    JPanel filtersPanel = new JPanel(new BorderLayout());
-    JPanel detailsPanel = new JPanel(new BorderLayout());
-    private ContractEntity selectedContract;
     private JButton generatePdfButton;
     private JButton generateHTMLButton;
 
@@ -50,11 +34,11 @@ public class ContractScreen extends Screen {
             @Override
             public void actionPerformed(ActionEvent e) {
                 JFrame frame = (JFrame) SwingUtilities.getWindowAncestor(ContractScreen.this);
-                if(selectedContract == null) {
+                if(selectedEntity == null) {
                     noContractSelectedWarning(frame);
                     return;
                 }
-                ContractBuilderHTML contractBuilder = new ContractBuilderHTML(frame, selectedContract);
+                ContractBuilderHTML contractBuilder = new ContractBuilderHTML(frame, (ContractEntity) selectedEntity);
                 contractBuilder.buildTitle();
                 contractBuilder.buildContents();
                 contractBuilder.buildSignature("Janusz Szef");
@@ -65,12 +49,12 @@ public class ContractScreen extends Screen {
             @Override
             public void actionPerformed(ActionEvent e) {
                 JFrame frame = (JFrame) SwingUtilities.getWindowAncestor(ContractScreen.this);
-                if(selectedContract == null) {
+                if(selectedEntity == null) {
                     noContractSelectedWarning(frame);
                     return;
                 }
 
-                ContractBuilderPdf contractBuilder = new ContractBuilderPdf(frame, selectedContract);
+                ContractBuilderPdf contractBuilder = new ContractBuilderPdf(frame, (ContractEntity) selectedEntity);
                 contractBuilder.buildTitle();
                 contractBuilder.buildContents();
                 contractBuilder.buildSignature("Janusz Szef");
@@ -91,16 +75,16 @@ public class ContractScreen extends Screen {
     }
 
     @Override
-    protected Entity getSelectedEntity() {
-        int cId= Integer.valueOf(contractsTable.getValueAt(contractsTable.getSelectedRow(), 0).toString());
-        String eName = (String) contractsTable.getValueAt(contractsTable.getSelectedRow(), 2);
+    protected ContractEntity getSelectedEntity() {
+        int cId= Integer.valueOf(table.getValueAt(table.getSelectedRow(), 0).toString());
+        String eName = (String) table.getValueAt(table.getSelectedRow(), 2);
 
         EntityManager entityManager = DefaultEntityManagerFactory.getInstance().createEntityManager();
         TypedQuery<ContractEntity> contractById = entityManager.createNamedQuery("ContractEntity.byId", ContractEntity.class);
 
         contractById.setParameter("contractId", cId);
 
-        return (Entity) contractById.getSingleResult();
+        return contractById.getSingleResult();
     }
 
     @Override
@@ -134,6 +118,7 @@ public class ContractScreen extends Screen {
 
     @Override
     protected void deleteSelectedEntity() {
+        ContractEntity selectedContract = (ContractEntity) selectedEntity;
         EntityManager entityManager = DefaultEntityManagerFactory.getInstance().createEntityManager();
         EntityTransaction entityTransaction = entityManager.getTransaction();
 
@@ -148,7 +133,7 @@ public class ContractScreen extends Screen {
 
             entityManager.close();
 
-            contractsTable.clearSelection();
+            table.clearSelection();
             refreshTable();
         } finally {
             if(entityTransaction.isActive()) {
@@ -160,7 +145,6 @@ public class ContractScreen extends Screen {
 
     @Override
     protected EntityView createView() {
-
         return new ContractView();
     }
 
@@ -172,13 +156,13 @@ public class ContractScreen extends Screen {
 
     @Override
     protected EntityDialog createDialog() {
-
-        return new ;
+        JFrame frame = (JFrame) SwingUtilities.getWindowAncestor(ContractScreen.this);
+        return new ContractDialog(frame, "Add contract", ContractScreen.this);
     }
 
     @Override
     public void refreshTable() {
-        DefaultTableModel model = (DefaultTableModel) contractsTable.getModel();
+        DefaultTableModel model = (DefaultTableModel) table.getModel();
         model.setRowCount(0);
 
         EntityManager entityManager = DefaultEntityManagerFactory.getInstance().createEntityManager();

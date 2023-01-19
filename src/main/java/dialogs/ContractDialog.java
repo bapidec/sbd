@@ -24,13 +24,11 @@ public class ContractDialog extends JDialog implements EntityDialog {
     JButton confirmButton = new JButton("Confirm");
     JButton cancelButton = new JButton("Cancel");
     JButton addButton;
-    ContractScreen contractScreen;
 
     EntityManager entityManager = DefaultEntityManagerFactory.getInstance().createEntityManager();
 
     public ContractDialog(JFrame frame, String title, ContractScreen contractScreen){
-        super(frame);
-        super.setTitle("aaa");
+        super(frame, title);
         super.setVisible(true);
         super.setModal(true);
         super.setAlwaysOnTop(true);
@@ -138,15 +136,6 @@ public class ContractDialog extends JDialog implements EntityDialog {
         close();
     }
 
-    @Override
-    public void setFrame(JFrame frame) {
-
-    }
-
-    @Override
-    public void setScreen(Screen screen) {
-
-    }
 }
 
 

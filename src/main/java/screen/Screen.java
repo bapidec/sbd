@@ -19,14 +19,14 @@ public abstract class Screen extends JPanel {
     protected JTable table;
     protected Entity selectedEntity;
     protected EntityView view;
-    private JPanel detailsPanel;
-    private JButton addButton;
-    private JButton deleteButton;
-    private JButton editButton;
-    private JComboBox filtersKeyBox;
-    private JComboBox filterValueBox;
-    private JPanel filtersPanel;
-    private JButton clearFiltersButton;
+    protected JPanel detailsPanel;
+    protected JButton addButton;
+    protected JButton deleteButton;
+    protected JButton editButton;
+    protected JComboBox filtersKeyBox;
+    protected JComboBox filterValueBox;
+    protected JPanel filtersPanel;
+    protected JButton clearFiltersButton;
 
     public Screen() {
         super(new GridLayout(0,2));
@@ -35,14 +35,16 @@ public abstract class Screen extends JPanel {
         createTable();
         createFilters();
 
+        this.add(tablePanel);
+        this.add(this.detailsPanel);
+
+
         this.addButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 JFrame frame = (JFrame) SwingUtilities.getWindowAncestor(Screen.this);
                 addButton.setEnabled(false);
                 EntityDialog addDialog = createDialog();
-                addDialog.setFrame(frame);
-                addDialog.setScreen(Screen.this);
             }
         });
 
@@ -131,6 +133,8 @@ public abstract class Screen extends JPanel {
     protected void createFilters() {
         this.filtersPanel = new JPanel(new BorderLayout());
         this.clearFiltersButton = new JButton("Clear");
+        this.filtersKeyBox = new JComboBox<>();
+        this.filterValueBox = new JComboBox<>();
 
         JPanel filterByOrdersPanel = new JPanel(new GridLayout(0, 2));
         filterByOrdersPanel.add(this.filtersKeyBox);
