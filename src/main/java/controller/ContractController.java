@@ -2,7 +2,10 @@ package controller;
 
 import entity.ContractEntity;
 import entity.EmployeeEntity;
+import entityFactory.DefaultEntityManagerFactory;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.TypedQuery;
 import view.ContractView;
 import view.EntityView;
 
@@ -17,7 +20,14 @@ public class ContractController implements EntityController{
     }
 
     private String findEmployeeName() {
-        return "Twoja stara";
+        EntityManager entityManager = DefaultEntityManagerFactory.getInstance().createEntityManager();
+
+        TypedQuery<String> contractEmployeeQuery = entityManager.createNamedQuery("EmployeeEntity.nameById", String.class);
+
+        contractEmployeeQuery.setParameter("employee_id", contractEntity.getEmployeeEmployeeId());
+
+        return String.valueOf(contractEmployeeQuery.getSingleResult());
+
     }
 
     public void updateView() {
