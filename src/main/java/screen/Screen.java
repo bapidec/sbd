@@ -62,9 +62,11 @@ public abstract class Screen extends JPanel {
             public void actionPerformed(ActionEvent e) {
                 JFrame frame = (JFrame) SwingUtilities.getWindowAncestor(Screen.this);
                 editButton.setEnabled(false);
-                //new PlacesDialog(frame, addButton, "Edit building");
+                //edit dialog
             }
         });
+
+        editButton.setEnabled(false);
 
     }
 

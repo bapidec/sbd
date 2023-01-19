@@ -8,6 +8,7 @@ import dialogs.ContractDialog;
 import dialogs.EntityDialog;
 import entity.ContractEntity;
 import entityFactory.DefaultEntityManagerFactory;
+import iterator.ContractFilteredDataList;
 import jakarta.persistence.*;
 import view.ContractView;
 import view.EntityView;
@@ -18,6 +19,7 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 public class ContractScreen extends Screen {
@@ -94,11 +96,17 @@ public class ContractScreen extends Screen {
         EntityManager entityManager = DefaultEntityManagerFactory.getInstance().createEntityManager();
         TypedQuery<ContractEntity> allContracts = entityManager.createNamedQuery("ContractEntity.all", ContractEntity.class);
 
-        for (ContractEntity c: allContracts.getResultList()) {
-            int id = c.getContractId();
-            String date_start = String.valueOf(c.getDateStart());
-            int employee_id = c.getEmployeeEmployeeId();
-            String employeeName = c.getEmployeeName(entityManager);
+
+
+        ContractFilteredDataList filteredResults = new ContractFilteredDataList(allContracts.getResultList(), "type", "job");
+//        List filteredResults = allContracts.getResultList();
+
+        for (Object c: filteredResults) {
+            c = (ContractEntity) c;
+            int id = ((ContractEntity) c).getContractId();
+            String date_start = String.valueOf(((ContractEntity) c).getDateStart());
+            int employee_id = ((ContractEntity) c).getEmployeeEmployeeId();
+            String employeeName = ((ContractEntity) c).getEmployeeName(entityManager);
             rows.add(new String[]{String.valueOf(id), date_start, employeeName});
         }
 

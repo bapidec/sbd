@@ -2,6 +2,7 @@ package entity;
 
 import jakarta.persistence.*;
 
+import java.lang.annotation.Annotation;
 import java.sql.Timestamp;
 
 @Entity
@@ -9,7 +10,7 @@ import java.sql.Timestamp;
 @NamedQuery(name = "EmployeeEntity.ids", query = "SELECT e.employeeId FROM EmployeeEntity e")
 @NamedQuery(name = "EmployeeEntity.nameById", query = "SELECT e.name FROM EmployeeEntity e WHERE e.id = :employee_id")
 @NamedQuery(name = "EmployeeEntity.surnameById", query = "SELECT e.surname FROM EmployeeEntity e WHERE e.id = :employee_id")
-public class EmployeeEntity {
+public class EmployeeEntity implements Entity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Id
     @Column(name = "employee_id")
@@ -117,5 +118,15 @@ public class EmployeeEntity {
         result = 31 * result + (email != null ? email.hashCode() : 0);
         result = 31 * result + (phoneNr != null ? phoneNr.hashCode() : 0);
         return result;
+    }
+
+    @Override
+    public Class<? extends Annotation> annotationType() {
+        return null;
+    }
+
+    @Override
+    public String name() {
+        return null;
     }
 }
