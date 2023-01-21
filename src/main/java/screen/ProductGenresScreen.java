@@ -52,7 +52,7 @@ public class ProductGenresScreen extends JPanel {
             public void actionPerformed(ActionEvent e) {
                 JFrame frame = (JFrame) SwingUtilities.getWindowAncestor(ProductGenresScreen.this);
                 editButton.setEnabled(false);
-                ClientDialog clientDialog = new ClientDialog(frame, editButton, "Edit client");
+
             }
         });
 

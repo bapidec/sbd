@@ -51,7 +51,7 @@ public class SuppliersScreen extends JPanel{
             public void actionPerformed(ActionEvent e) {
                 JFrame frame = (JFrame) SwingUtilities.getWindowAncestor(SuppliersScreen.this);
                 editButton.setEnabled(false);
-                ClientDialog clientDialog = new ClientDialog(frame, editButton, "Edit client");
+
             }
         });
 

@@ -28,6 +28,7 @@ public class Main {
         menuBar.add(menuDelete);
         mainFrame.setJMenuBar(menuBar);
 
+
         JTabbedPane tabbedPane = new JTabbedPane();
         tabbedPane.addTab("Clients", new ClientsScreen());
         tabbedPane.addTab("Employees", new EmployeeScreen());

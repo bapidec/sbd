@@ -2,10 +2,13 @@ package entity;
 
 import jakarta.persistence.*;
 
+import java.lang.annotation.Annotation;
+
 @Entity
 @NamedQuery(name = "ClientEntity.all", query = "FROM ClientEntity c")
+@NamedQuery(name = "ClientEntity.byId", query = "FROM ClientEntity c WHERE c.clientId = :clientId")
 @Table(name = "client", schema = "sbd", catalog = "")
-public class ClientEntity {
+public class ClientEntity implements Entity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Id
     @Column(name = "client_id")
@@ -112,5 +115,15 @@ public class ClientEntity {
                 ", surname='" + surname + '\'' +
                 ", address='" + address + '\'' +
                 '}';
+    }
+
+    @Override
+    public Class<? extends Annotation> annotationType() {
+        return null;
+    }
+
+    @Override
+    public String name() {
+        return null;
     }
 }

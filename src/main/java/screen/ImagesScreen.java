@@ -41,7 +41,7 @@ public class ImagesScreen extends JPanel {
             public void actionPerformed(ActionEvent e) {
                 JFrame frame = (JFrame) SwingUtilities.getWindowAncestor(ImagesScreen.this);
                 addButton.setEnabled(false);
-                ClientDialog clientDialog = new ClientDialog(frame, addButton, "Add client");
+
             }
         });
 

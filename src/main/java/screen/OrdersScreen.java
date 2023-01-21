@@ -52,7 +52,7 @@ public class OrdersScreen extends JPanel {
             public void actionPerformed(ActionEvent e) {
                 JFrame frame = (JFrame) SwingUtilities.getWindowAncestor(OrdersScreen.this);
                 editButton.setEnabled(false);
-                ClientDialog clientDialog = new ClientDialog(frame, editButton, "Edit client");
+
             }
         });
 

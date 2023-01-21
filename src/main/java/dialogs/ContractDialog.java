@@ -13,8 +13,17 @@ import java.awt.event.ActionListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.sql.Timestamp;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.Objects;
+import java.util.Date;
+import javax.swing.SpinnerDateModel;
 
 public class ContractDialog extends JDialog implements EntityDialog {
+
+
+
     JTextField startDate = new JTextField();
     JTextField endDate = new JTextField();
     JTextField paymentAmount = new JTextField();
@@ -112,13 +121,12 @@ public class ContractDialog extends JDialog implements EntityDialog {
 
         try {
             transaction.begin();
-
             ContractEntity newContract = new ContractEntity();
-            newContract.setEmployeeEmployeeId((Integer) this.employee.getSelectedItem());
-            newContract.setPlacePlaceId((Integer) this.place.getSelectedItem());
+            newContract.setEmployeeEmployeeId(Integer.valueOf(employee.getSelectedItem().toString()));
+            newContract.setPlacePlaceId(Integer.valueOf(place.getSelectedItem().toString()));
             newContract.setPaymentAmount(Double.parseDouble(this.paymentAmount.getText()));
             newContract.setType(this.type.getText());
-            newContract.setDateStart(Timestamp.valueOf(this.startDate.getText()+" 00:00:00"));
+            newContract.setDateStart(Timestamp.valueOf(this.startDate.getText()+" 00:00:00"));//wazne, aby wpisywac w formacie yyyy-MM-dd, np 2022-01-02
             newContract.setDateEnd(Timestamp.valueOf(this.endDate.getText()+" 00:00:00"));
 
             entityManager.persist(newContract);
