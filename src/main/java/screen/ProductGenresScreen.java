@@ -1,9 +1,25 @@
 package screen;
 
+import controller.EntityController;
+import controller.ProductGenreController;
+import controller.SupplierController;
 import dialogs.ClientDialog;
+import dialogs.EntityDialog;
 import dialogs.ProductGenreDialog;
+import dialogs.SupplierDialog;
+import entity.ProductGenreEntity;
+import entity.SupplierEntity;
+import entityFactory.DefaultEntityManagerFactory;
+import iterator.ProductGenreFilteredDataList;
+import iterator.SupplierFilteredDataList;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.EntityTransaction;
+import jakarta.persistence.Query;
+import jakarta.persistence.TypedQuery;
 import view.ClientView;
+import view.EntityView;
 import view.ProductGenreView;
+import view.SupplierView;
 
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
@@ -13,97 +29,132 @@ import java.awt.event.ActionListener;
 import java.util.ArrayList;
 import java.util.List;
 
-public class ProductGenresScreen extends JPanel {
-    JTable clientsTable;
-    ProductGenreView genreView = new ProductGenreView();
-    JComboBox filtersBox = new JComboBox<>();
-    JComboBox filterValueBox = new JComboBox<>();
-    JTextField filterValueField = new JTextField();
-    JButton clearFiltersButton = new JButton("Clear");
-    JButton addButton = new JButton("Add");
-    JButton deleteButton = new JButton("Delete");
-    JButton editButton = new JButton("Edit");
+public class ProductGenresScreen extends Screen {
 
-    JPanel tablePanel = new JPanel(new BorderLayout());
-    JPanel filtersPanel = new JPanel(new BorderLayout());
-    JPanel detailsPanel = new JPanel(new BorderLayout());
     public ProductGenresScreen() {
-        super(new GridLayout(0,2));
+        super();
 
-        createTable();
-        createFilters();
-        createDetails();
-        this.tablePanel.setBorder(BorderFactory.createTitledBorder("Clients table"));
-        this.detailsPanel.setBorder(BorderFactory.createTitledBorder("Client details"));
-        this.add(tablePanel);
-        this.add(detailsPanel);
+        this.tablePanel.setBorder(BorderFactory.createTitledBorder("Genre table"));
+        this.detailsPanel.setBorder(BorderFactory.createTitledBorder("Genre details"));
 
-        this.addButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                JFrame frame = (JFrame) SwingUtilities.getWindowAncestor(ProductGenresScreen.this);
-                addButton.setEnabled(false);
-                ProductGenreDialog productGenreDialog = new ProductGenreDialog(frame, "Add genre");
-            }
-        });
-
-        this.editButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                JFrame frame = (JFrame) SwingUtilities.getWindowAncestor(ProductGenresScreen.this);
-                editButton.setEnabled(false);
-
-            }
-        });
 
     }
 
-    private void createDetails() {
-        this.detailsPanel.add(this.genreView);
-        JPanel buttonsPanel = new JPanel();
-        buttonsPanel.add(this.addButton);
-        buttonsPanel.add(this.deleteButton);
-        buttonsPanel.add(this.editButton);
-        this.detailsPanel.add(buttonsPanel, BorderLayout.SOUTH);
+
+
+    private static void noProductGenreSelectedWarning(JFrame frame) {
+        JOptionPane.showMessageDialog(frame, "Please select genre first", "No genre selected", JOptionPane.WARNING_MESSAGE);
     }
 
-    private void createFilters() {
-        JPanel filterByOrdersPanel = new JPanel(new GridLayout(0, 2));
-        filterByOrdersPanel.add(this.filtersBox);
-        filterByOrdersPanel.add(this.filterValueField);
-
-        this.filtersPanel.add(filterByOrdersPanel);
-        this.filtersPanel.add(clearFiltersButton, BorderLayout.SOUTH);
-
-        this.filtersPanel.setBorder(BorderFactory.createTitledBorder("Filter"));
-        this.tablePanel.add(filtersPanel, BorderLayout.NORTH);
+    @Override
+    protected void addAdditionalButtons(JPanel buttonsPanel) {
     }
 
-    private void createTable() {
-        String[] columnNames = {"Id", "Name"};
+    @Override
+    protected ProductGenreEntity getSelectedEntity() {
+        int cId = Integer.valueOf(table.getValueAt(table.getSelectedRow(), 0).toString());
+        String eName = (String) table.getValueAt(table.getSelectedRow(), 1);
+
+        EntityManager entityManager = DefaultEntityManagerFactory.getInstance().createEntityManager();
+        TypedQuery<ProductGenreEntity> productGenreById = entityManager.createNamedQuery("ProductGenreEntity.byId", ProductGenreEntity.class);
+
+        productGenreById.setParameter("productGenreId", cId);
+
+        return productGenreById.getSingleResult();
+    }
+
+    @Override
+    protected Object[][] fetchDataFromDatabase(int columnsNr) {
         List<String[]> rows = new ArrayList<>();
 
-        rows.add(new String[]{String.valueOf(1), "Fantasy"});
+        EntityManager entityManager = DefaultEntityManagerFactory.getInstance().createEntityManager();
+        TypedQuery<ProductGenreEntity> allProductGenres = entityManager.createNamedQuery("ProductGenreEntity.all", ProductGenreEntity.class);
 
-        Object[][] data = new Object[rows.size()][columnNames.length];
 
-        for(int i = 0; i < rows.size(); i++) {
+        ProductGenreFilteredDataList filteredResults = new ProductGenreFilteredDataList(allProductGenres.getResultList(), "name", "desc");
+//        List filteredResults = allContracts.getResultList();
+
+        for (Object c : filteredResults) {
+            c = (ProductGenreEntity) c;
+            int id = ((ProductGenreEntity) c).getGenreId();
+            String name = String.valueOf(((ProductGenreEntity) c).getName());
+            rows.add(new String[]{String.valueOf(id), name});
+        }
+
+        Object[][] data = new Object[rows.size()][columnsNr];
+
+        for (int i = 0; i < rows.size(); i++) {
             data[i] = rows.get(i);
         }
-        DefaultTableModel model = new DefaultTableModel(data, columnNames) {
-            @Override
-            public boolean isCellEditable(int row, int column) {
-                return false;
-            }
-        };
-        this.clientsTable = new JTable(model);
 
-        clientsTable.setFillsViewportHeight(true);
-        clientsTable.setCellSelectionEnabled(false);
-        clientsTable.setRowSelectionAllowed(true);
-
-        JScrollPane tablePane = new JScrollPane(this.clientsTable);
-        this.tablePanel.add(tablePane);
+        return data;
     }
-}
 
+    @Override
+    protected String[] createColumnNames() {
+        return new String[]{"Id", "Name"};
+    }
+
+    @Override
+    protected void deleteSelectedEntity() {
+        ProductGenreEntity selectedProductGenre = (ProductGenreEntity) selectedEntity;
+        EntityManager entityManager = DefaultEntityManagerFactory.getInstance().createEntityManager();
+        EntityTransaction entityTransaction = entityManager.getTransaction();
+
+        try {
+            entityTransaction.begin();
+
+            Query deleteProductGenreQuery = entityManager.createQuery("DELETE FROM ProductGenreEntity c WHERE c.genreId = :genreId");
+            deleteProductGenreQuery.setParameter("genreId", selectedProductGenre.getGenreId());
+            deleteProductGenreQuery.executeUpdate();
+
+            entityTransaction.commit();
+
+            entityManager.close();
+
+            table.clearSelection();
+            refreshTable();
+        } finally {
+            if (entityTransaction.isActive()) {
+                entityTransaction.rollback();
+            }
+            entityManager.close();
+        }
+    }
+
+    @Override
+    protected EntityView createView() {
+        return new ProductGenreView();
+    }
+
+    @Override
+    protected EntityController createController() {
+        return new ProductGenreController();
+    }
+
+    @Override
+    protected EntityDialog createDialog() {
+        JFrame frame = (JFrame) SwingUtilities.getWindowAncestor(ProductGenresScreen.this);
+        return new ProductGenreDialog(frame, "Add genre", ProductGenresScreen.this);
+    }
+    @Override
+    public void refreshTable() {
+        DefaultTableModel model = (DefaultTableModel) table.getModel();
+        model.setRowCount(0);
+
+        EntityManager entityManager = DefaultEntityManagerFactory.getInstance().createEntityManager();
+        TypedQuery<ProductGenreEntity> allProductGenres = entityManager.createNamedQuery("ProductGenreEntity.all", ProductGenreEntity.class);
+
+        for (ProductGenreEntity c: allProductGenres.getResultList()) {
+            int id = c.getGenreId();
+            String name = String.valueOf(c.getName());
+
+
+            model.addRow(new String[]{String.valueOf(id), name});
+        }
+        entityManager.close();
+    }
+
+
+
+}

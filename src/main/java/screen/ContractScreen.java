@@ -2,7 +2,7 @@ package screen;
 
 import contractBuilder.ContractBuilderHTML;
 import contractBuilder.ContractBuilderPdf;
-import controller.ContractController;
+import controller.EmployeeController;
 import controller.EntityController;
 import dialogs.ContractDialog;
 import dialogs.EntityDialog;
@@ -15,11 +15,9 @@ import view.EntityView;
 
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
-import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 public class ContractScreen extends Screen {
@@ -159,7 +157,7 @@ public class ContractScreen extends Screen {
     @Override
     protected EntityController createController() {
 
-        return new ContractController();
+        return new EmployeeController();
     }
 
     @Override

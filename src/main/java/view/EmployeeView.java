@@ -3,7 +3,7 @@ package view;
 import javax.swing.*;
 import java.awt.*;
 
-public class EmployeeView extends JPanel {
+public class EmployeeView extends JPanel implements EntityView{
     JTextField firstNameField = new JTextField();
     JTextField lastNameField = new JTextField();
     JTextField sexField = new JTextField();
@@ -49,5 +49,15 @@ public class EmployeeView extends JPanel {
         emailField.setText(email);
         phoneNumberField.setText(phoneNumber);
         dateOfBirthField.setText(dateOfBirth);
+    }
+
+    @Override
+    public void clear() {
+        firstNameField.setText("");
+        lastNameField.setText("");
+        sexField.setText("");
+        emailField.setText("");
+        phoneNumberField.setText("");
+        dateOfBirthField.setText("");
     }
 }

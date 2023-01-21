@@ -3,7 +3,7 @@ package view;
 import javax.swing.*;
 import java.awt.*;
 
-public class ProductGenreView extends JPanel {
+public class ProductGenreView extends JPanel implements EntityView{
     JTextField nameField = new JTextField();
     JTextArea desctiptionArea = new JTextArea();
 
@@ -28,5 +28,13 @@ public class ProductGenreView extends JPanel {
         desctiptionArea.setText(desc);
     }
 
+    public void showProductGenreDetails(String name, String description) {
+        nameField.setText(name);
+        desctiptionArea.setText(description);
+    }
+    @Override
+    public void clear() {
+
+    }
 }
 

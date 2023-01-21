@@ -1,7 +1,23 @@
 package screen;
 
+import controller.ClientController;
+import controller.EmployeeController;
+import controller.EntityController;
+import dialogs.ClientDialog;
 import dialogs.EmployeeDialog;
+import dialogs.EntityDialog;
+import entity.ClientEntity;
+import entity.EmployeeEntity;
+import entityFactory.DefaultEntityManagerFactory;
+import iterator.ClientFilteredDataList;
+import iterator.EmployeeFilteredDataList;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.EntityTransaction;
+import jakarta.persistence.Query;
+import jakarta.persistence.TypedQuery;
+import view.ClientView;
 import view.EmployeeView;
+import view.EntityView;
 
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
@@ -11,101 +27,136 @@ import java.awt.event.ActionListener;
 import java.util.ArrayList;
 import java.util.List;
 
-public class EmployeeScreen extends JPanel {
-    JTable employeeTable;
-    EmployeeView employeeView = new EmployeeView();
-    JComboBox filtersBox = new JComboBox<>();
-    JComboBox filterValueBox = new JComboBox<>();
-    JTextField filterValueField = new JTextField();
-    JButton clearFiltersButton = new JButton("Clear");
-    JButton addButton = new JButton("Add");
-    JButton deleteButton = new JButton("Delete");
-    JButton editButton = new JButton("Edit");
-    JButton contractButton = new JButton("Fill contract");
+public class EmployeeScreen extends Screen {
 
-    JPanel tablePanel = new JPanel(new BorderLayout());
-    JPanel filtersPanel = new JPanel(new BorderLayout());
-    JPanel detailsPanel = new JPanel(new BorderLayout());
 
-    public EmployeeScreen(){
-        super(new GridLayout(0, 2));
+    public EmployeeScreen() {
+        super();
 
-        createTable();
-        createFilters();
-        createDetails();
-        this.tablePanel.setBorder(BorderFactory.createTitledBorder("Employee table"));
-        this.detailsPanel.setBorder(BorderFactory.createTitledBorder("Employee details"));
-        this.add(tablePanel);
-        this.add(detailsPanel);
+        this.tablePanel.setBorder(BorderFactory.createTitledBorder("Employees table"));
+        this.detailsPanel.setBorder(BorderFactory.createTitledBorder("Employees details"));
 
-        this.contractButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                addButton.setEnabled(false);
-            }
-        });
-        this.addButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                JFrame frame = (JFrame) SwingUtilities.getWindowAncestor(EmployeeScreen.this);
-                addButton.setEnabled(false);
-                EmployeeDialog employeeDialog = new EmployeeDialog(frame, addButton, "Add employee");
 
-            }
-        });
-        this.editButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                JFrame frame = (JFrame) SwingUtilities.getWindowAncestor(EmployeeScreen.this);
-                editButton.setEnabled(false);
-                EmployeeDialog employeeDialog = new EmployeeDialog(frame, editButton, "Edit employee");
-            }
-        });
     }
-    public void createFilters(){
-        JPanel filterByOrdersPanel = new JPanel(new GridLayout(0, 2));
-        filterByOrdersPanel.add(this.filtersBox);
-        filterByOrdersPanel.add(this.filterValueBox);
 
-        this.filtersPanel.add(filterByOrdersPanel);
-        this.filtersPanel.add(clearFiltersButton, BorderLayout.SOUTH);
+    private static void noEmployeeSelectedWarning(JFrame frame) {
+        JOptionPane.showMessageDialog(frame, "Please select employee first", "No employee selected", JOptionPane.WARNING_MESSAGE);
+    }
 
-        this.filtersPanel.setBorder(BorderFactory.createTitledBorder("Filter"));
-        this.tablePanel.add(filtersPanel, BorderLayout.NORTH);
+    @Override
+    protected void addAdditionalButtons(JPanel buttonsPanel) {
     }
-    public void createDetails(){
-        this.detailsPanel.add(this.employeeView);
-        JPanel buttonsPanel = new JPanel();
-        buttonsPanel.add(this.addButton);
-        buttonsPanel.add(this.deleteButton);
-        buttonsPanel.add(this.editButton);
-        buttonsPanel.add(this.contractButton);
-        this.detailsPanel.add(buttonsPanel, BorderLayout.SOUTH);
+
+    @Override
+    protected EmployeeEntity getSelectedEntity() {
+        int cId= Integer.valueOf(table.getValueAt(table.getSelectedRow(), 0).toString());
+        String eName = (String) table.getValueAt(table.getSelectedRow(), 2);
+
+        EntityManager entityManager = DefaultEntityManagerFactory.getInstance().createEntityManager();
+        TypedQuery<EmployeeEntity> employeeById = entityManager.createNamedQuery("EmployeeEntity.byId", EmployeeEntity.class);
+
+        employeeById.setParameter("employeeId", cId);
+
+        return employeeById.getSingleResult();
     }
-    public void createTable(){
-        String[] columnNames = {"Id", "First name", "Last name"};//, "Sex", "Email", "Phone number", "Date of birth"};
+
+    @Override
+    protected Object[][] fetchDataFromDatabase(int columnsNr) {
         List<String[]> rows = new ArrayList<>();
 
-        rows.add(new String[]{String.valueOf(1), "Marcin", "Lapinski"});//, "Male", "siemka", "372902", "06-34-2002"});
+        EntityManager entityManager = DefaultEntityManagerFactory.getInstance().createEntityManager();
+        TypedQuery<EmployeeEntity> allEmployees = entityManager.createNamedQuery("EmployeeEntity.all", EmployeeEntity.class);
 
-        Object[][] data = new Object[rows.size()][columnNames.length];
+
+
+        EmployeeFilteredDataList filteredResults = new EmployeeFilteredDataList(allEmployees.getResultList(), "name", "surname");
+//        List filteredResults = allContracts.getResultList();
+
+        for (Object c: filteredResults) {
+            c = (EmployeeEntity) c;
+            int id = ((EmployeeEntity) c).getEmployeeId();
+            String name = String.valueOf(((EmployeeEntity) c).getName());
+            String surname= ((EmployeeEntity) c).getSurname();
+            rows.add(new String[]{String.valueOf(id), name, surname});
+        }
+
+        Object[][] data = new Object[rows.size()][columnsNr];
 
         for(int i = 0; i < rows.size(); i++) {
             data[i] = rows.get(i);
         }
-        DefaultTableModel model = new DefaultTableModel(data, columnNames) {
-            @Override
-            public boolean isCellEditable(int row, int column) {
-                return false;
-            }
-        };
-        this.employeeTable = new JTable(model);
 
-        employeeTable.setFillsViewportHeight(true);
-        employeeTable.setCellSelectionEnabled(false);
-        employeeTable.setRowSelectionAllowed(true);
-
-        JScrollPane tablePane = new JScrollPane(this.employeeTable);
-        this.tablePanel.add(tablePane);
+        return data;
     }
+
+    @Override
+    protected String[] createColumnNames() {
+        return new String[]{"Id", "First Name", "Last Name"};
+    }
+
+    @Override
+    protected void deleteSelectedEntity() {
+        EmployeeEntity selectedEmployee = (EmployeeEntity) selectedEntity;
+        EntityManager entityManager = DefaultEntityManagerFactory.getInstance().createEntityManager();
+        EntityTransaction entityTransaction = entityManager.getTransaction();
+
+        try {
+            entityTransaction.begin();
+
+            Query deleteClientQuery = entityManager.createQuery("DELETE FROM EmployeeEntity c WHERE c.employeeId = :employeeId");
+            deleteClientQuery.setParameter("employeeId", selectedEmployee.getEmployeeId());
+            deleteClientQuery.executeUpdate();
+
+            entityTransaction.commit();
+
+            entityManager.close();
+
+            table.clearSelection();
+            refreshTable();
+        } finally {
+            if(entityTransaction.isActive()) {
+                entityTransaction.rollback();
+            }
+            entityManager.close();
+        }
+    }
+
+    @Override
+    protected EntityView createView() {
+        return new EmployeeView();
+    }
+
+    @Override
+    protected EntityController createController() {
+        return new EmployeeController();
+    }
+
+    @Override
+    protected EntityDialog createDialog() {
+        JFrame frame = (JFrame) SwingUtilities.getWindowAncestor(EmployeeScreen.this);
+        return new EmployeeDialog(frame, "Add employee", EmployeeScreen.this);
+    }
+
+    @Override
+    public void refreshTable() {
+        DefaultTableModel model = (DefaultTableModel) table.getModel();
+        model.setRowCount(0);
+
+        EntityManager entityManager = DefaultEntityManagerFactory.getInstance().createEntityManager();
+        TypedQuery<EmployeeEntity> allEmployees = entityManager.createNamedQuery("EmployeeEntity.all", EmployeeEntity.class);
+
+        for (EmployeeEntity c: allEmployees.getResultList()) {
+            int id = c.getEmployeeId();
+            String name = String.valueOf(c.getName());
+            String surname = String.valueOf(c.getSurname());
+
+            model.addRow(new String[]{String.valueOf(id), name, surname});
+        }
+        entityManager.close();
+    }
+
+
+
 }
+
+

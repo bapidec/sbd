@@ -1,36 +1,21 @@
 package screen;
 
-import contractBuilder.ContractBuilderHTML;
-import contractBuilder.ContractBuilderPdf;
-import controller.ClientController;
-import controller.ContractController;
 import controller.EntityController;
 import controller.SupplierController;
-import dialogs.ClientDialog;
-import dialogs.ContractDialog;
 import dialogs.EntityDialog;
 import dialogs.SupplierDialog;
-import entity.ClientEntity;
-import entity.ContractEntity;
 import entity.SupplierEntity;
 import entityFactory.DefaultEntityManagerFactory;
-import iterator.ClientFilteredDataList;
-import iterator.ContractFilteredDataList;
 import iterator.SupplierFilteredDataList;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityTransaction;
 import jakarta.persistence.Query;
 import jakarta.persistence.TypedQuery;
-import view.ClientView;
-import view.ContractView;
 import view.EntityView;
 import view.SupplierView;
 
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
-import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.util.ArrayList;
 import java.util.List;
 

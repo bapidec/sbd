@@ -6,6 +6,8 @@ import java.lang.annotation.Annotation;
 import java.sql.Timestamp;
 
 @Entity
+@NamedQuery(name = "EmployeeEntity.all", query = "FROM EmployeeEntity c")
+@NamedQuery(name = "EmployeeEntity.byId", query = "FROM EmployeeEntity c WHERE c.employeeId = :employeeId")
 @Table(name = "employee", schema = "sbd", catalog = "")
 @NamedQuery(name = "EmployeeEntity.ids", query = "SELECT e.employeeId FROM EmployeeEntity e")
 @NamedQuery(name = "EmployeeEntity.nameById", query = "SELECT e.name FROM EmployeeEntity e WHERE e.id = :employee_id")
