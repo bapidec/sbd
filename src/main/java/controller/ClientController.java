@@ -1,14 +1,8 @@
 package controller;
 
 import entity.ClientEntity;
-import entity.ContractEntity;
-import entity.EmployeeEntity;
-import entityFactory.DefaultEntityManagerFactory;
 import jakarta.persistence.Entity;
-import jakarta.persistence.EntityManager;
-import jakarta.persistence.TypedQuery;
 import view.ClientView;
-import view.ContractView;
 import view.EntityView;
 
 public class ClientController implements EntityController{

@@ -1,9 +1,21 @@
 package dialogs;
 
+import entity.ClientEntity;
+import entity.SupplierEntity;
+import entityFactory.DefaultEntityManagerFactory;
+import jakarta.persistence.Entity;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.EntityTransaction;
+import screen.ClientsScreen;
+import screen.SuppliersScreen;
+
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.sql.Timestamp;
 
-public class SupplierDialog extends JDialog{
+public class SupplierDialog extends JDialog implements EntityDialog {
     JTextField name = new JTextField();
     JTextField vehicleNr = new JTextField();
     JTextField startDate = new JTextField();
@@ -11,7 +23,10 @@ public class SupplierDialog extends JDialog{
     JButton confirmButton = new JButton("Confirm");
     JButton cancelButton = new JButton("Cancel");
 
-    public SupplierDialog(JFrame frame, String title){
+    JButton addButton;
+
+    EntityManager entityManager = DefaultEntityManagerFactory.getInstance().createEntityManager();
+    public SupplierDialog(JFrame frame, String title, SuppliersScreen supplierScreen){
         super(frame, title);
         super.setVisible(true);
         super.setModal(true);
@@ -20,6 +35,22 @@ public class SupplierDialog extends JDialog{
         super.setPreferredSize(new Dimension(400,300));
         super.setLocationRelativeTo(null);
         super.setLayout(new BorderLayout());
+
+        this.addButton = supplierScreen.getAddButton();
+
+        this.confirmButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                addSupplier(supplierScreen);
+            }
+        });
+
+        this.cancelButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                close();
+            }
+        });
 
         JPanel formPanel = new JPanel(new GridLayout(0, 2));
         JPanel buttonsPanel = new JPanel();
@@ -44,6 +75,40 @@ public class SupplierDialog extends JDialog{
 
 
     }
+    private void close() {
+        addButton.setEnabled(true);
+        SupplierDialog.super.dispose();
+    }
+
+    private void addSupplier(SuppliersScreen supplierScreen) {
+        EntityTransaction transaction = entityManager.getTransaction();
+
+
+
+        try {
+            transaction.begin();
+            SupplierEntity newSupplier = new SupplierEntity();
+            newSupplier.setName(this.name.getText());
+            newSupplier.setVehicleNumber(Integer.valueOf(this.vehicleNr.getText()));
+            newSupplier.setStartDate(Timestamp.valueOf(this.startDate.getText()+" 00:00:00"));
+            newSupplier.setEndDate(Timestamp.valueOf(this.endDate.getText()+" 00:00:00"));
+
+
+            entityManager.persist(newSupplier);
+            transaction.commit();
+
+            supplierScreen.refreshTable();
+
+        } finally {
+            if(transaction.isActive()) {
+                transaction.rollback();
+            }
+            entityManager.close();
+        }
+
+        close();
+    }
+
 }
 
 

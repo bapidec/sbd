@@ -2,11 +2,14 @@ package entity;
 
 import jakarta.persistence.*;
 
+import java.lang.annotation.Annotation;
 import java.sql.Timestamp;
 
 @Entity
+@NamedQuery(name = "SupplierEntity.all", query = "FROM SupplierEntity c")
+@NamedQuery(name = "SupplierEntity.byId", query = "FROM SupplierEntity c WHERE c.supplierId = :supplierId")
 @Table(name = "supplier", schema = "sbd", catalog = "")
-public class SupplierEntity {
+public class SupplierEntity implements Entity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Id
     @Column(name = "supplier_id")
@@ -89,5 +92,15 @@ public class SupplierEntity {
         result = 31 * result + (startDate != null ? startDate.hashCode() : 0);
         result = 31 * result + (endDate != null ? endDate.hashCode() : 0);
         return result;
+    }
+
+    @Override
+    public Class<? extends Annotation> annotationType() {
+        return null;
+    }
+
+    @Override
+    public String name() {
+        return null;
     }
 }

@@ -3,7 +3,7 @@ package view;
 import javax.swing.*;
 import java.awt.*;
 
-public class SupplierView extends JPanel {
+public class SupplierView extends JPanel implements EntityView{
     JTextField nameField = new JTextField();
     JTextField vehicleNumberField = new JTextField();
     JTextField startDateField = new JTextField();
@@ -33,11 +33,15 @@ public class SupplierView extends JPanel {
         super.add(endDateField);
     }
 
-    public void showClientsDetails(String name, String vehicleNumber, String startDate, String endDate) {
+    public void showSuppliersDetails(String name, String vehicleNumber, String startDate, String endDate) {
         nameField.setText(name);
         vehicleNumberField.setText(vehicleNumber);
         startDateField.setText(startDate);
         endDateField.setText(endDate);
     }
 
+    @Override
+    public void clear() {
+
+    }
 }
