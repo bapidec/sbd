@@ -3,7 +3,7 @@ package view;
 import javax.swing.*;
 import java.awt.*;
 
-public class PlaceView extends JPanel {
+public class PlaceView extends JPanel implements EntityView {
     JTextField locationField = new JTextField();
     JTextField productLimitField = new JTextField();
     JTextField employeeLimitField = new JTextField();
@@ -46,4 +46,12 @@ public class PlaceView extends JPanel {
         maintenanceCostField.setText(type);
     }
 
+    @Override
+    public void clear() {
+        locationField.setText("");
+        productLimitField.setText("");
+        employeeLimitField.setText("");
+        maintenanceCostField.setText("");
+        maintenanceCostField.setText("");
+    }
 }

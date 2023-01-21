@@ -1,108 +1,154 @@
 package screen;
 
+import controller.EntityController;
+import controller.PlaceController;
+import dialogs.EntityDialog;
 import dialogs.PlacesDialog;
+import entity.PlaceEntity;
+import entityFactory.DefaultEntityManagerFactory;
+import iterator.PlaceFilteredDataList;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.EntityTransaction;
+import jakarta.persistence.Query;
+import jakarta.persistence.TypedQuery;
+import view.EntityView;
 import view.PlaceView;
-import view.SupplierView;
 
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
-import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.util.ArrayList;
 import java.util.List;
 
-public class PlacesScreen extends JPanel{
-    JTable placesTable;
-    PlaceView placeView = new PlaceView();
-    JComboBox filtersBox = new JComboBox<>();
-    JComboBox filterValueBox = new JComboBox<>();
-    JTextField filterValueField = new JTextField();
-    JButton clearFiltersButton = new JButton("Clear");
-    JButton addButton = new JButton("Add");
-    JButton deleteButton = new JButton("Delete");
-    JButton editButton = new JButton("Edit");
+public class PlacesScreen extends Screen {
 
-    JPanel tablePanel = new JPanel(new BorderLayout());
-    JPanel filtersPanel = new JPanel(new BorderLayout());
-    JPanel detailsPanel = new JPanel(new BorderLayout());
+
     public PlacesScreen() {
-        super(new GridLayout(0,2));
+        super();
 
-        createTable();
-        createFilters();
-        createDetails();
         this.tablePanel.setBorder(BorderFactory.createTitledBorder("Places table"));
-        this.detailsPanel.setBorder(BorderFactory.createTitledBorder("Place details"));
-        this.add(tablePanel);
-        this.add(detailsPanel);
+        this.detailsPanel.setBorder(BorderFactory.createTitledBorder("Places details"));
 
-        this.addButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                JFrame frame = (JFrame) SwingUtilities.getWindowAncestor(PlacesScreen.this);
-                addButton.setEnabled(false);
-                PlacesDialog placesDialog = new PlacesDialog(frame, addButton, "Add building");
-            }
-        });
-
-        this.editButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                JFrame frame = (JFrame) SwingUtilities.getWindowAncestor(PlacesScreen.this);
-                editButton.setEnabled(false);
-                PlacesDialog placesDialog = new PlacesDialog(frame, addButton, "Edit building");
-            }
-        });
 
     }
 
-    private void createDetails() {
-        this.detailsPanel.add(this.placeView);
-        JPanel buttonsPanel = new JPanel();
-        buttonsPanel.add(this.addButton);
-        buttonsPanel.add(this.deleteButton);
-        buttonsPanel.add(this.editButton);
-        this.detailsPanel.add(buttonsPanel, BorderLayout.SOUTH);
+    private static void noPlaceSelectedWarning(JFrame frame) {
+        JOptionPane.showMessageDialog(frame, "Please select place first", "No place selected", JOptionPane.WARNING_MESSAGE);
     }
 
-    private void createFilters() {
-        JPanel filterByOrdersPanel = new JPanel(new GridLayout(0, 2));
-        filterByOrdersPanel.add(this.filtersBox);
-        filterByOrdersPanel.add(this.filterValueBox);
-
-        this.filtersPanel.add(filterByOrdersPanel);
-        this.filtersPanel.add(clearFiltersButton, BorderLayout.SOUTH);
-
-        this.filtersPanel.setBorder(BorderFactory.createTitledBorder("Filter"));
-        this.tablePanel.add(filtersPanel, BorderLayout.NORTH);
+    @Override
+    protected void addAdditionalButtons(JPanel buttonsPanel) {
     }
 
-    private void createTable() {
-        String[] columnNames = {"Id", "Location", "Type"};
+    @Override
+    protected PlaceEntity getSelectedEntity() {
+        int cId= Integer.valueOf(table.getValueAt(table.getSelectedRow(), 0).toString());
+        String eName = (String) table.getValueAt(table.getSelectedRow(), 2);
+
+        EntityManager entityManager = DefaultEntityManagerFactory.getInstance().createEntityManager();
+        TypedQuery<PlaceEntity> placeById = entityManager.createNamedQuery("PlaceEntity.byId", PlaceEntity.class);
+
+        placeById.setParameter("placeId", cId);
+
+        return placeById.getSingleResult();
+    }
+
+    @Override
+    protected Object[][] fetchDataFromDatabase(int columnsNr) {
         List<String[]> rows = new ArrayList<>();
 
-        rows.add(new String[]{String.valueOf(1), "Białystok", "Shop"});
+        EntityManager entityManager = DefaultEntityManagerFactory.getInstance().createEntityManager();
+        TypedQuery<PlaceEntity> allPlaces = entityManager.createNamedQuery("PlaceEntity.all", PlaceEntity.class);
 
-        Object[][] data = new Object[rows.size()][columnNames.length];
+
+
+        PlaceFilteredDataList filteredResults = new PlaceFilteredDataList(allPlaces.getResultList(), "Location", "Maintenance cost");
+//        List filteredResults = allPlaces.getResultList();
+
+        for (Object c: filteredResults) {
+            c = (PlaceEntity) c;
+            int id = ((PlaceEntity) c).getPlaceId();
+            String location = String.valueOf(((PlaceEntity) c).getLocation());
+            String maintenanceCost= String.valueOf(((PlaceEntity) c).getMaintenanceCost());
+            rows.add(new String[]{String.valueOf(id), location, maintenanceCost});
+        }
+
+        Object[][] data = new Object[rows.size()][columnsNr];
 
         for(int i = 0; i < rows.size(); i++) {
             data[i] = rows.get(i);
         }
-        DefaultTableModel model = new DefaultTableModel(data, columnNames) {
-            @Override
-            public boolean isCellEditable(int row, int column) {
-                return false;
-            }
-        };
-        this.placesTable = new JTable(model);
 
-        placesTable.setFillsViewportHeight(true);
-        placesTable.setCellSelectionEnabled(false);
-        placesTable.setRowSelectionAllowed(true);
-
-        JScrollPane tablePane = new JScrollPane(this.placesTable);
-        this.tablePanel.add(tablePane);
+        return data;
     }
+
+    @Override
+    protected String[] createColumnNames() {
+        return new String[]{"Id", "Location", "Maintenance Cost"};
+    }
+
+    @Override
+    protected void deleteSelectedEntity() {
+        PlaceEntity selectedPlace = (PlaceEntity) selectedEntity;
+        EntityManager entityManager = DefaultEntityManagerFactory.getInstance().createEntityManager();
+        EntityTransaction entityTransaction = entityManager.getTransaction();
+
+        try {
+            entityTransaction.begin();
+
+            Query deletePlaceQuery = entityManager.createQuery("DELETE FROM PlaceEntity c WHERE c.placeId = :placeId");
+            deletePlaceQuery.setParameter("placeId", selectedPlace.getPlaceId());
+            deletePlaceQuery.executeUpdate();
+
+            entityTransaction.commit();
+
+            entityManager.close();
+
+            table.clearSelection();
+            refreshTable();
+        } finally {
+            if(entityTransaction.isActive()) {
+                entityTransaction.rollback();
+            }
+            entityManager.close();
+        }
+    }
+
+    @Override
+    protected EntityView createView() {
+        return new PlaceView();
+    }
+
+    @Override
+    protected EntityController createController() {
+        return new PlaceController();
+    }
+
+    @Override
+    protected EntityDialog createDialog() {
+        JFrame frame = (JFrame) SwingUtilities.getWindowAncestor(PlacesScreen.this);
+        return new PlacesDialog(frame, "Add place", PlacesScreen.this);
+    }
+
+    @Override
+    public void refreshTable() {
+        DefaultTableModel model = (DefaultTableModel) table.getModel();
+        model.setRowCount(0);
+
+        EntityManager entityManager = DefaultEntityManagerFactory.getInstance().createEntityManager();
+        TypedQuery<PlaceEntity> allPlaces = entityManager.createNamedQuery("PlaceEntity.all", PlaceEntity.class);
+
+        for (PlaceEntity c: allPlaces.getResultList()) {
+            int id = c.getPlaceId();
+            String location = String.valueOf(c.getLocation());
+            String maintenanceCost = String.valueOf(c.getMaintenanceCost());
+
+            model.addRow(new String[]{String.valueOf(id), location, maintenanceCost});
+        }
+        entityManager.close();
+    }
+
+
+
 }
+
 

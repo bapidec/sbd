@@ -2,10 +2,14 @@ package entity;
 
 import jakarta.persistence.*;
 
+import java.lang.annotation.Annotation;
+
 @Entity
 @NamedQuery(name = "PlaceEntity.ids", query = "SELECT p.placeId FROM PlaceEntity p")
+@NamedQuery(name = "PlaceEntity.all", query = "FROM PlaceEntity c")
+@NamedQuery(name = "PlaceEntity.byId", query = "FROM PlaceEntity c WHERE c.placeId = :placeId")
 @Table(name = "place", schema = "sbd", catalog = "")
-public class PlaceEntity {
+public class PlaceEntity implements Entity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Id
     @Column(name = "place_id")
@@ -103,5 +107,15 @@ public class PlaceEntity {
         result = 31 * result + (maintenanceCost != null ? maintenanceCost.hashCode() : 0);
         result = 31 * result + (supplierSupplierId != null ? supplierSupplierId.hashCode() : 0);
         return result;
+    }
+
+    @Override
+    public Class<? extends Annotation> annotationType() {
+        return null;
+    }
+
+    @Override
+    public String name() {
+        return null;
     }
 }
