@@ -46,7 +46,6 @@ public class ClientsScreen extends Screen {
 
         EntityManager entityManager = DefaultEntityManagerFactory.getInstance().createEntityManager();
         TypedQuery<ClientEntity> clientById = entityManager.createNamedQuery("ClientEntity.byId", ClientEntity.class);
-
         clientById.setParameter("clientId", cId);
 
         return clientById.getSingleResult();

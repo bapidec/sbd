@@ -6,7 +6,7 @@ import java.lang.annotation.Annotation;
 
 @Entity
 @NamedQuery(name = "ProductGenreEntity.all", query = "FROM ProductGenreEntity c")
-@NamedQuery(name = "ProductGenreEntity.byId", query = "FROM ProductGenreEntity c WHERE c.productProductId = :productProductId")
+@NamedQuery(name = "ProductGenreEntity.byId", query = "FROM ProductGenreEntity c WHERE c.genreId = :genreId")
 @Table(name = "product_genre", schema = "sbd", catalog = "")
 public class ProductGenreEntity implements Entity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)

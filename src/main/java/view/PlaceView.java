@@ -38,12 +38,13 @@ public class PlaceView extends JPanel implements EntityView {
         super.add(typeField);
     }
 
-    public void showClientsDetails(String location, String productLimit, String employeeLimit, String maintenanceCost, String type) {
+    public void showPlacesDetails(String location, String productLimit, String employeeLimit, String maintenanceCost, String type) {
         locationField.setText(location);
         productLimitField.setText(productLimit);
         employeeLimitField.setText(employeeLimit);
         maintenanceCostField.setText(maintenanceCost);
         maintenanceCostField.setText(type);
+        typeField.setText("Shop");
     }
 
     @Override
@@ -53,5 +54,6 @@ public class PlaceView extends JPanel implements EntityView {
         employeeLimitField.setText("");
         maintenanceCostField.setText("");
         maintenanceCostField.setText("");
+        typeField.setText("");
     }
 }

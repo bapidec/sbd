@@ -2,6 +2,7 @@ package screen;
 
 import contractBuilder.ContractBuilderHTML;
 import contractBuilder.ContractBuilderPdf;
+import controller.ContractController;
 import controller.EmployeeController;
 import controller.EntityController;
 import dialogs.ContractDialog;
@@ -9,7 +10,10 @@ import dialogs.EntityDialog;
 import entity.ContractEntity;
 import entityFactory.DefaultEntityManagerFactory;
 import iterator.ContractFilteredDataList;
-import jakarta.persistence.*;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.EntityTransaction;
+import jakarta.persistence.Query;
+import jakarta.persistence.TypedQuery;
 import view.ContractView;
 import view.EntityView;
 
@@ -81,7 +85,6 @@ public class ContractScreen extends Screen {
 
         EntityManager entityManager = DefaultEntityManagerFactory.getInstance().createEntityManager();
         TypedQuery<ContractEntity> contractById = entityManager.createNamedQuery("ContractEntity.byId", ContractEntity.class);
-
         contractById.setParameter("contractId", cId);
 
         return contractById.getSingleResult();
@@ -157,7 +160,7 @@ public class ContractScreen extends Screen {
     @Override
     protected EntityController createController() {
 
-        return new EmployeeController();
+        return new ContractController();
     }
 
     @Override

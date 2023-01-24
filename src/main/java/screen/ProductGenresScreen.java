@@ -58,7 +58,7 @@ public class ProductGenresScreen extends Screen {
         EntityManager entityManager = DefaultEntityManagerFactory.getInstance().createEntityManager();
         TypedQuery<ProductGenreEntity> productGenreById = entityManager.createNamedQuery("ProductGenreEntity.byId", ProductGenreEntity.class);
 
-        productGenreById.setParameter("productGenreId", cId);
+        productGenreById.setParameter("genreId", cId);
 
         return productGenreById.getSingleResult();
     }

@@ -5,7 +5,7 @@ import java.awt.*;
 
 public class ProductGenreView extends JPanel implements EntityView{
     JTextField nameField = new JTextField();
-    JTextArea desctiptionArea = new JTextArea();
+    JTextArea descriptionArea = new JTextArea();
 
     public ProductGenreView() {
         super();
@@ -14,23 +14,23 @@ public class ProductGenreView extends JPanel implements EntityView{
         super.setLayout(gridLayout);
 
         nameField.setEditable(false);
-        desctiptionArea.setEditable(false);
+        descriptionArea.setEditable(false);
 
         super.add(new JLabel("Name: "));
         super.add(nameField);
 
         super.add(new JLabel("Description: "));
-        super.add(desctiptionArea);
+        super.add(descriptionArea);
     }
 
     public void showClientsDetails(String name, String desc) {
         nameField.setText(name);
-        desctiptionArea.setText(desc);
+        descriptionArea.setText(desc);
     }
 
     public void showProductGenreDetails(String name, String description) {
         nameField.setText(name);
-        desctiptionArea.setText(description);
+        descriptionArea.setText(description);
     }
     @Override
     public void clear() {

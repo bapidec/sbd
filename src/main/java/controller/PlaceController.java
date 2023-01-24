@@ -22,7 +22,7 @@ public class PlaceController implements EntityController{
             return;
         }
 
-        placeView.showClientsDetails(
+        placeView.showPlacesDetails(
                 String.valueOf(placeEntity.getLocation()),
                 String.valueOf(placeEntity.getProductLimit()),
                 String.valueOf(placeEntity.getEmployeeLimit()),

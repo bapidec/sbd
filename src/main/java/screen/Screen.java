@@ -34,7 +34,7 @@ public abstract class Screen extends JPanel {
         createDetails();
         createTable();
         createFilters();
-
+        refreshTable();
         this.add(tablePanel);
         this.add(this.detailsPanel);
 

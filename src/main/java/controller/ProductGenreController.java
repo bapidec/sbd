@@ -1,10 +1,8 @@
 package controller;
 
-import entity.PlaceEntity;
 import entity.ProductGenreEntity;
 import jakarta.persistence.Entity;
 import view.EntityView;
-import view.PlaceView;
 import view.ProductGenreView;
 
 public class ProductGenreController implements EntityController{
