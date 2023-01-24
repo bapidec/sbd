@@ -1,7 +1,22 @@
 package screen;
 
+import controller.ClientController;
+import controller.EntityController;
+import controller.OrderController;
 import dialogs.ClientDialog;
+import dialogs.EntityDialog;
 import dialogs.OrderDialog;
+import entity.ClientEntity;
+import entity.OrderEntity;
+import entityFactory.DefaultEntityManagerFactory;
+import iterator.ClientFilteredDataList;
+import iterator.OrderFilteredDataList;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.EntityTransaction;
+import jakarta.persistence.Query;
+import jakarta.persistence.TypedQuery;
+import view.ClientView;
+import view.EntityView;
 import view.OrderView;
 import view.PlaceView;
 
@@ -13,97 +28,128 @@ import java.awt.event.ActionListener;
 import java.util.ArrayList;
 import java.util.List;
 
-public class OrdersScreen extends JPanel {
-    JTable ordersTable;
-    OrderView orderView = new OrderView();
-    JComboBox filtersBox = new JComboBox<>();
-    JComboBox filterValueBox = new JComboBox<>();
-    JTextField filterValueField = new JTextField();
-    JButton clearFiltersButton = new JButton("Clear");
-    JButton addButton = new JButton("Add");
-    JButton deleteButton = new JButton("Delete");
-    JButton editButton = new JButton("Edit");
+public class OrdersScreen extends Screen {
 
-    JPanel tablePanel = new JPanel(new BorderLayout());
-    JPanel filtersPanel = new JPanel(new BorderLayout());
-    JPanel detailsPanel = new JPanel(new BorderLayout());
     public OrdersScreen() {
-        super(new GridLayout(0,2));
+        super();
 
-        createTable();
-        createFilters();
-        createDetails();
         this.tablePanel.setBorder(BorderFactory.createTitledBorder("Orders table"));
-        this.detailsPanel.setBorder(BorderFactory.createTitledBorder("Order details"));
-        this.add(tablePanel);
-        this.add(detailsPanel);
+        this.detailsPanel.setBorder(BorderFactory.createTitledBorder("Orders details"));
 
-        this.addButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                JFrame frame = (JFrame) SwingUtilities.getWindowAncestor(OrdersScreen.this);
-                addButton.setEnabled(false);
-                OrderDialog clientDialog = new OrderDialog(frame, "Add order");
-            }
-        });
 
-        this.editButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                JFrame frame = (JFrame) SwingUtilities.getWindowAncestor(OrdersScreen.this);
-                editButton.setEnabled(false);
+    }
+    private static void noOrdersSelectedWarning(JFrame frame) {
+        JOptionPane.showMessageDialog(frame, "Please select order first", "No order selected", JOptionPane.WARNING_MESSAGE);
+    }
 
-            }
-        });
+    @Override
+    protected void addAdditionalButtons(JPanel buttonsPanel) {
 
     }
 
-    private void createDetails() {
-        this.detailsPanel.add(this.orderView);
-        JPanel buttonsPanel = new JPanel();
-        buttonsPanel.add(this.addButton);
-        buttonsPanel.add(this.deleteButton);
-        buttonsPanel.add(this.editButton);
-        this.detailsPanel.add(buttonsPanel, BorderLayout.SOUTH);
+    @Override
+    protected OrderEntity getSelectedEntity() {
+        int cId= Integer.valueOf(table.getValueAt(table.getSelectedRow(), 0).toString());
+        String eName = (String) table.getValueAt(table.getSelectedRow(), 2);
+
+        EntityManager entityManager = DefaultEntityManagerFactory.getInstance().createEntityManager();
+        TypedQuery<OrderEntity> orderById = entityManager.createNamedQuery("OrderEntity.byId", OrderEntity.class);
+        orderById.setParameter("order_Id", cId);
+
+        return orderById.getSingleResult();
     }
-
-    private void createFilters() {
-        JPanel filterByOrdersPanel = new JPanel(new GridLayout(0, 2));
-        filterByOrdersPanel.add(this.filtersBox);
-        filterByOrdersPanel.add(this.filterValueBox);
-
-        this.filtersPanel.add(filterByOrdersPanel);
-        this.filtersPanel.add(clearFiltersButton, BorderLayout.SOUTH);
-
-        this.filtersPanel.setBorder(BorderFactory.createTitledBorder("Filter"));
-        this.tablePanel.add(filtersPanel, BorderLayout.NORTH);
-    }
-
-    private void createTable() {
-        String[] columnNames = {"Id", "Start date", "Address"};
+    @Override
+    protected Object[][] fetchDataFromDatabase(int columnsNr) {
         List<String[]> rows = new ArrayList<>();
 
-        rows.add(new String[]{String.valueOf(1), "19/12/2022", "Bialystok"});
+        EntityManager entityManager = DefaultEntityManagerFactory.getInstance().createEntityManager();
+        TypedQuery<OrderEntity> allOrders = entityManager.createNamedQuery("OrderEntity.byId", OrderEntity.class);
 
-        Object[][] data = new Object[rows.size()][columnNames.length];
+        OrderFilteredDataList filteredResults = new OrderFilteredDataList(allOrders.getResultList(), "start_date", "start_date");
+//        List filteredResults = allContracts.getResultList();
+
+        for (Object c: filteredResults) {
+
+            c = (OrderEntity) c;
+            int id = ((OrderEntity) c).getOrderId();
+            String startDate = String.valueOf(((OrderEntity) c).getStartDate());
+            String address= ((OrderEntity) c).getAddress();
+            rows.add(new String[]{String.valueOf(id), startDate, address});
+        }
+
+        Object[][] data = new Object[rows.size()][columnsNr];
 
         for(int i = 0; i < rows.size(); i++) {
             data[i] = rows.get(i);
         }
-        DefaultTableModel model = new DefaultTableModel(data, columnNames) {
-            @Override
-            public boolean isCellEditable(int row, int column) {
-                return false;
+
+        return data;
+    }
+
+    @Override
+    protected String[] createColumnNames() {
+        return new String[]{"Id", "Start Date", "Address"};
+    }
+
+    @Override
+    protected void deleteSelectedEntity() {
+        OrderEntity selectedOrder  = (OrderEntity) selectedEntity;
+        EntityManager entityManager = DefaultEntityManagerFactory.getInstance().createEntityManager();
+        EntityTransaction entityTransaction = entityManager.getTransaction();
+
+        try {
+            entityTransaction.begin();
+
+            Query deleteOrderQuery = entityManager.createQuery("DELETE FROM OrderEntity c WHERE c.orderId = :orderId");
+            deleteOrderQuery.setParameter("orderId", selectedOrder.getOrderId());
+            deleteOrderQuery.executeUpdate();
+
+            entityTransaction.commit();
+
+            entityManager.close();
+
+            table.clearSelection();
+            refreshTable();
+        } finally {
+            if(entityTransaction.isActive()) {
+                entityTransaction.rollback();
             }
-        };
-        this.ordersTable = new JTable(model);
+            entityManager.close();
+        }
+    }
 
-        ordersTable.setFillsViewportHeight(true);
-        ordersTable.setCellSelectionEnabled(false);
-        ordersTable.setRowSelectionAllowed(true);
+    @Override
+    protected EntityView createView() {
+        return new OrderView();
+    }
 
-        JScrollPane tablePane = new JScrollPane(this.ordersTable);
-        this.tablePanel.add(tablePane);
+    @Override
+    protected EntityController createController() {
+        return new OrderController();
+    }
+
+    @Override
+    protected EntityDialog createDialog() {
+        JFrame frame = (JFrame) SwingUtilities.getWindowAncestor(OrdersScreen.this);
+        return new OrderDialog(frame, "Add order", OrdersScreen.this);
+    }
+
+    @Override
+    public void refreshTable() {
+        DefaultTableModel model = (DefaultTableModel) table.getModel();
+        model.setRowCount(0);
+
+        EntityManager entityManager = DefaultEntityManagerFactory.getInstance().createEntityManager();
+        TypedQuery<OrderEntity> allOrders = entityManager.createNamedQuery("OrderEntity.all", OrderEntity.class);
+
+        for (OrderEntity c: allOrders.getResultList()) {
+            int id = c.getOrderId();
+            String startDate = String.valueOf(c.getStartDate());
+            String address = String.valueOf(c.getAddress());
+
+            model.addRow(new String[]{String.valueOf(id), startDate, address});
+        }
+        entityManager.close();
     }
 }
 

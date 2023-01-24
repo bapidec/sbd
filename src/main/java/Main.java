@@ -36,7 +36,7 @@ public class Main {
         tabbedPane.addTab("Suppliers", new SuppliersScreen());
         tabbedPane.addTab("Genres", new ProductGenresScreen());
         tabbedPane.addTab("Contracts", new ContractScreen());
-        tabbedPane.addTab("Orders", new OrdersScreen());
+        //tabbedPane.addTab("Orders", new OrdersScreen());
         tabbedPane.addTab("Products", new ProductsScreen());
         mainFrame.add(tabbedPane);
         mainFrame.pack();

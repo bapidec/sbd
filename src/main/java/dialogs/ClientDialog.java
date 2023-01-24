@@ -1,7 +1,6 @@
 package dialogs;
 
 import entity.ClientEntity;
-import entity.ContractEntity;
 import entityFactory.DefaultEntityManagerFactory;
 import jakarta.persistence.*;
 import screen.ClientsScreen;
@@ -10,9 +9,11 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.sql.Timestamp;
+
 
 public class ClientDialog extends JDialog implements EntityDialog {
+
+
 
 
 
@@ -121,6 +122,7 @@ public class ClientDialog extends JDialog implements EntityDialog {
 
         close();
     }
+
 
 }
 

@@ -3,7 +3,7 @@ package view;
 import javax.swing.*;
 import java.awt.*;
 
-public class OrderView extends JPanel {
+public class OrderView extends JPanel implements EntityView {
     JTextField startDateField = new JTextField();
     JTextField endDateField = new JTextField();
     JTextField addressField = new JTextField();
@@ -48,13 +48,21 @@ public class OrderView extends JPanel {
         super.add(productsArea);
     }
 
-    public void showClientsDetails(String location, String productLimit, String employeeLimit, String maintenanceCost, String type) {
-        startDateField.setText(location);
-        endDateField.setText(productLimit);
-        addressField.setText(employeeLimit);
-        clientNameField.setText(maintenanceCost);
-        clientNameField.setText(type);
+    public void showOrderDetails(String clientId, String address, String startDate, String endDate, String orderId) {
+        startDateField.setText(clientId);
+        endDateField.setText(address);
+        addressField.setText(startDate);
+        clientNameField.setText(endDate);
+        clientNameField.setText(orderId);
     }
 
+    @Override
+    public void clear() {
+        startDateField.setText("");
+        endDateField.setText("");
+        addressField.setText("");
+        clientNameField.setText("");
+        clientNameField.setText("");
+    }
 }
 

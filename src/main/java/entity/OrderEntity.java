@@ -2,11 +2,14 @@ package entity;
 
 import jakarta.persistence.*;
 
+import java.lang.annotation.Annotation;
 import java.sql.Timestamp;
 
 @Entity
+@NamedQuery(name = "OrderEntity.all", query = "FROM OrderEntity c")
+@NamedQuery(name = "OrderEntity.byId", query = "FROM OrderEntity c WHERE c.orderId = :orderId")
 @Table(name = "order", schema = "sbd", catalog = "")
-public class OrderEntity {
+public class OrderEntity implements Entity{
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Id
     @Column(name = "order_id")
@@ -88,5 +91,15 @@ public class OrderEntity {
         result = 31 * result + clientClientId;
         result = 31 * result + (address != null ? address.hashCode() : 0);
         return result;
+    }
+
+    @Override
+    public Class<? extends Annotation> annotationType() {
+        return null;
+    }
+
+    @Override
+    public String name() {
+        return null;
     }
 }

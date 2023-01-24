@@ -37,6 +37,7 @@ public class ClientsScreen extends Screen {
 
     @Override
     protected void addAdditionalButtons(JPanel buttonsPanel) {
+        
     }
 
     @Override
