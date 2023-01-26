@@ -37,7 +37,7 @@ public class ClientsScreen extends Screen {
 
     @Override
     protected void addAdditionalButtons(JPanel buttonsPanel) {
-        
+
     }
 
     @Override
@@ -61,7 +61,7 @@ public class ClientsScreen extends Screen {
 
 
 
-        ClientFilteredDataList filteredResults = new ClientFilteredDataList(allClients.getResultList(), "type", "job");
+        ClientFilteredDataList filteredResults = new ClientFilteredDataList(allClients.getResultList(), "xd", "xd");
 //        List filteredResults = allContracts.getResultList();
 
         for (Object c: filteredResults) {

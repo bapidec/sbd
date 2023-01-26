@@ -7,8 +7,8 @@ import java.sql.Timestamp;
 
 @Entity
 @NamedQuery(name = "OrderEntity.all", query = "FROM OrderEntity c")
-@NamedQuery(name = "OrderEntity.byId", query = "FROM OrderEntity c WHERE c.orderId = :orderId")
-@Table(name = "order", schema = "sbd", catalog = "")
+@NamedQuery(name = "OrderEntity.byId", query = "FROM OrderEntity c WHERE c.orderId = :order_Id")
+@Table(name = "\"order\"", schema = "sbd", catalog = "")
 public class OrderEntity implements Entity{
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Id

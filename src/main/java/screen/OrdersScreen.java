@@ -63,9 +63,8 @@ public class OrdersScreen extends Screen {
         List<String[]> rows = new ArrayList<>();
 
         EntityManager entityManager = DefaultEntityManagerFactory.getInstance().createEntityManager();
-        TypedQuery<OrderEntity> allOrders = entityManager.createNamedQuery("OrderEntity.byId", OrderEntity.class);
-
-        OrderFilteredDataList filteredResults = new OrderFilteredDataList(allOrders.getResultList(), "start_date", "start_date");
+        TypedQuery<OrderEntity> allOrders = entityManager.createNamedQuery("OrderEntity.all", OrderEntity.class);
+        OrderFilteredDataList filteredResults = new OrderFilteredDataList(allOrders.getResultList(), "start_date", "2023-01-24 12:39:48");
 //        List filteredResults = allContracts.getResultList();
 
         for (Object c: filteredResults) {
