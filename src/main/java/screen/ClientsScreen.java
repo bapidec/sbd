@@ -61,7 +61,7 @@ public class ClientsScreen extends Screen {
 
 
 
-        ClientFilteredDataList filteredResults = new ClientFilteredDataList(allClients.getResultList(), "xd", "xd");
+        ClientFilteredDataList filteredResults = new ClientFilteredDataList(allClients.getResultList(), "name", "Jan");
 //        List filteredResults = allContracts.getResultList();
 
         for (Object c: filteredResults) {

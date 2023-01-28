@@ -1,9 +1,11 @@
 package view;
 
+import org.w3c.dom.Entity;
+
 import javax.swing.*;
 import java.awt.*;
 
-public class ProductsView extends JPanel{
+public class ProductsView extends JPanel implements EntityView {
 
     JTextField productNameField = new JTextField();
     JTextField typeField = new JTextField();
@@ -70,5 +72,17 @@ public class ProductsView extends JPanel{
         genreField.setText(genre);
         keywordsArea.setText(keywords);
 
+    }
+
+    @Override
+    public void clear() {
+        productNameField.setText("");
+        typeField.setText("");
+        priceField.setText("");
+        descriptionField.setText("");
+        dateOfProductionField.setText("");
+        discountField.setText("");
+        genreField.setText("");
+        keywordsArea.setText("");
     }
 }

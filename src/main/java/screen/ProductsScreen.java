@@ -1,7 +1,23 @@
 package screen;
 
+import controller.ClientController;
+import controller.EntityController;
+import controller.ProductController;
+import dialogs.ClientDialog;
+import dialogs.EntityDialog;
 import dialogs.ShowImagesDialog;
 import dialogs.ProductDialog;
+import entity.ClientEntity;
+import entity.ProductEntity;
+import entityFactory.DefaultEntityManagerFactory;
+import iterator.ClientFilteredDataList;
+import iterator.ProductFilteredDataList;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.EntityTransaction;
+import jakarta.persistence.Query;
+import jakarta.persistence.TypedQuery;
+import view.ClientView;
+import view.EntityView;
 import view.ProductsView;
 
 import javax.swing.*;
@@ -12,107 +28,134 @@ import java.awt.event.ActionListener;
 import java.util.ArrayList;
 import java.util.List;
 
-public class ProductsScreen extends JPanel{
-    JTable productsTable;
-    ProductsView productsView = new ProductsView();
-    JComboBox filtersBox = new JComboBox<>();
-    JComboBox filterValueBox = new JComboBox<>();
-    JTextField filterValueField = new JTextField();
-    JButton clearFiltersButton = new JButton("Clear");
-    JButton addButton = new JButton("Add");
-    JButton deleteButton = new JButton("Delete");
-    JButton editButton = new JButton("Edit");
-    JButton imagesButton = new JButton("Show images");
-    JButton discountButton = new JButton("Set discount");
-    JPanel tablePanel = new JPanel(new BorderLayout());
-    JPanel filtersPanel = new JPanel(new BorderLayout());
-    JPanel detailsPanel = new JPanel(new BorderLayout());
+public class ProductsScreen extends Screen{
 
     public ProductsScreen() {
-        super(new GridLayout(0,2));
+        super();
 
-        createTable();
-        createFilters();
-        createDetails();
         this.tablePanel.setBorder(BorderFactory.createTitledBorder("Products table"));
-        this.detailsPanel.setBorder(BorderFactory.createTitledBorder("Product details"));
-        this.add(tablePanel);
-        this.add(detailsPanel);
+        this.detailsPanel.setBorder(BorderFactory.createTitledBorder("Products details"));
 
-        this.addButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                JFrame frame = (JFrame) SwingUtilities.getWindowAncestor(ProductsScreen.this);
-                addButton.setEnabled(false);
-                ProductDialog productDialog = new ProductDialog(frame, "Add product");
-            }
-        });
-        this.editButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                JFrame frame = (JFrame) SwingUtilities.getWindowAncestor(ProductsScreen.this);
-                editButton.setEnabled(false);
-                ProductDialog productDialog = new ProductDialog(frame, "Edit product");
-            }
-        });
-        this.imagesButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                JFrame frame = (JFrame) SwingUtilities.getWindowAncestor(ProductsScreen.this);
-                editButton.setEnabled(false);
-                ShowImagesDialog images = new ShowImagesDialog(frame);
-            }
-        });
+
+    }
+    private static void noProductSelectedWarning(JFrame frame) {
+        JOptionPane.showMessageDialog(frame, "Please select product first", "No product selected", JOptionPane.WARNING_MESSAGE);
     }
 
-    private void createDetails() {
-        this.detailsPanel.add(this.productsView);
-        JPanel buttonsPanel = new JPanel();
-        buttonsPanel.add(this.addButton);
-        buttonsPanel.add(this.deleteButton);
-        buttonsPanel.add(this.editButton);
-        buttonsPanel.add(this.imagesButton);
-        buttonsPanel.add(this.discountButton);
-        this.detailsPanel.add(buttonsPanel, BorderLayout.SOUTH);
+    @Override
+    protected void addAdditionalButtons(JPanel buttonsPanel) {
+
     }
 
-    private void createFilters() {
-        JPanel filterByOrdersPanel = new JPanel(new GridLayout(0, 2));
-        filterByOrdersPanel.add(this.filtersBox);
-        filterByOrdersPanel.add(this.filterValueBox);
+    @Override
+    protected ProductEntity getSelectedEntity() {
+        int cId= Integer.valueOf(table.getValueAt(table.getSelectedRow(), 0).toString());
+        String eName = (String) table.getValueAt(table.getSelectedRow(), 3);
 
-        this.filtersPanel.add(filterByOrdersPanel);
-        this.filtersPanel.add(clearFiltersButton, BorderLayout.SOUTH);
+        EntityManager entityManager = DefaultEntityManagerFactory.getInstance().createEntityManager();
+        TypedQuery<ProductEntity> productById = entityManager.createNamedQuery("ProductEntity.byId", ProductEntity.class);
+        productById.setParameter("productId", cId);
 
-        this.filtersPanel.setBorder(BorderFactory.createTitledBorder("Filter"));
-        this.tablePanel.add(filtersPanel, BorderLayout.NORTH);
+        return productById.getSingleResult();
     }
-    private void createTable() {
-        String[] columnNames = {"Id", "Name", "type", "Price"};
+
+    @Override
+    protected Object[][] fetchDataFromDatabase(int columnsNr) {
         List<String[]> rows = new ArrayList<>();
 
-        rows.add(new String[]{String.valueOf(1), "Baby Yoda", "Plushie", "99$"});
-        rows.add(new String[]{String.valueOf(2), "Uno", "Card Game", "5$"});
+        EntityManager entityManager = DefaultEntityManagerFactory.getInstance().createEntityManager();
+        TypedQuery<ProductEntity> allProducts = entityManager.createNamedQuery("ProductEntity.all", ProductEntity.class);
 
-        Object[][] data = new Object[rows.size()][columnNames.length];
+
+
+        ProductFilteredDataList filteredResults = new ProductFilteredDataList(allProducts.getResultList(), "name", "Yoda");
+//        List filteredResults = allContracts.getResultList();
+
+        for (Object c: filteredResults) {
+            c = (ProductEntity) c;
+            int id = ((ProductEntity) c).getProductId();
+            String name = String.valueOf(((ProductEntity) c).getName());
+            String type= ((ProductEntity) c).getType();
+            Double price= ((ProductEntity) c).getPrice();
+
+            rows.add(new String[]{String.valueOf(id), name, type, String.valueOf(price)});
+        }
+
+        Object[][] data = new Object[rows.size()][columnsNr];
 
         for(int i = 0; i < rows.size(); i++) {
             data[i] = rows.get(i);
         }
-        DefaultTableModel model = new DefaultTableModel(data, columnNames) {
-            @Override
-            public boolean isCellEditable(int row, int column) {
-                return false;
-            }
-        };
-        this.productsTable = new JTable(model);
 
-        productsTable.setFillsViewportHeight(true);
-        productsTable.setCellSelectionEnabled(false);
-        productsTable.setRowSelectionAllowed(true);
-
-        JScrollPane tablePane = new JScrollPane(this.productsTable);
-        this.tablePanel.add(tablePane);
+        return data;
     }
+
+    @Override
+    protected String[] createColumnNames() {
+        return new String[]{"Id", "Name", "Type", "Price"};
+    }
+
+    @Override
+    protected void deleteSelectedEntity() {
+        ProductEntity selectedProduct = (ProductEntity) selectedEntity;
+        EntityManager entityManager = DefaultEntityManagerFactory.getInstance().createEntityManager();
+        EntityTransaction entityTransaction = entityManager.getTransaction();
+
+        try {
+            entityTransaction.begin();
+
+            Query deleteProductQuery = entityManager.createQuery("DELETE FROM ProductEntity c WHERE c.productId = :productId");
+            deleteProductQuery.setParameter("productId", selectedProduct.getProductId());
+            deleteProductQuery.executeUpdate();
+
+            entityTransaction.commit();
+
+            entityManager.close();
+
+            table.clearSelection();
+            refreshTable();
+        } finally {
+            if(entityTransaction.isActive()) {
+                entityTransaction.rollback();
+            }
+            entityManager.close();
+        }
+    }
+
+    @Override
+    protected EntityView createView() {
+        return new ProductsView();
+    }
+
+    @Override
+    protected EntityController createController() {
+        return new ProductController();
+    }
+
+    @Override
+    protected EntityDialog createDialog() {
+        JFrame frame = (JFrame) SwingUtilities.getWindowAncestor(ProductsScreen.this);
+        return new ProductDialog(frame, "Add product", ProductsScreen.this);
+    }
+
+    @Override
+    public void refreshTable() {
+        DefaultTableModel model = (DefaultTableModel) table.getModel();
+        model.setRowCount(0);
+
+        EntityManager entityManager = DefaultEntityManagerFactory.getInstance().createEntityManager();
+        TypedQuery<ProductEntity> allProducts = entityManager.createNamedQuery("ProductEntity.all", ProductEntity.class);
+
+        for (ProductEntity c: allProducts.getResultList()) {
+            int id = c.getProductId();
+            String name = String.valueOf(((ProductEntity) c).getName());
+            String type= ((ProductEntity) c).getType();
+            Double price= ((ProductEntity) c).getPrice();
+
+            model.addRow(new String[]{String.valueOf(id), name, type, String.valueOf(price)});
+        }
+        entityManager.close();
+    }
+
 
 }

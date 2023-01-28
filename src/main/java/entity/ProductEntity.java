@@ -2,11 +2,14 @@ package entity;
 
 import jakarta.persistence.*;
 
+import java.lang.annotation.Annotation;
 import java.sql.Timestamp;
 
 @Entity
+@NamedQuery(name = "ProductEntity.all", query = "FROM ProductEntity c")
+@NamedQuery(name = "ProductEntity.byId", query = "FROM ProductEntity c WHERE c.productId = :productId")
 @Table(name = "product", schema = "sbd", catalog = "")
-public class ProductEntity {
+public class ProductEntity implements Entity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Id
     @Column(name = "product_id")
@@ -118,5 +121,23 @@ public class ProductEntity {
         result = 31 * result + (dateOfProduction != null ? dateOfProduction.hashCode() : 0);
         result = 31 * result + discountDiscountId;
         return result;
+    }
+
+    @Override
+    public Class<? extends Annotation> annotationType() {
+        return null;
+    }
+
+    @Override
+    public String name() {
+        return null;
+    }
+
+    public String getGenre() {
+        return "Gatunek Domyślny";
+    }
+
+    public String getKeywords() {
+        return "Domyślne Słowa Kluczowe";
     }
 }

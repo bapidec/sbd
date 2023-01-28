@@ -1,16 +1,21 @@
 package dialogs;
 
+import entity.ClientEntity;
+import entity.ProductEntity;
+import entityFactory.DefaultEntityManagerFactory;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.EntityTransaction;
+import screen.ClientsScreen;
 import screen.ProductsScreen;
 
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.sql.Timestamp;
 
-public class ProductDialog extends JDialog{
+public class ProductDialog extends JDialog implements EntityDialog {
 
-    private JButton confirmButton = new JButton("Confirm");
-    private JButton cancelButton = new JButton("Cancel");
     JTextField productNameField = new JTextField();
     JTextField typeField = new JTextField();
     JTextField priceField = new JTextField();
@@ -24,21 +29,44 @@ public class ProductDialog extends JDialog{
     JButton newKeyword = new JButton("New keyword");
     JButton addImage = new JButton("Add image");
 
+    JButton confirmButton = new JButton("Confirm");
+    JButton cancelButton = new JButton("Cancel");
+    JButton addButton;
     JPanel formPanel = new JPanel(new GridLayout(0, 2));
     JPanel keywordsPanel = new JPanel(new GridLayout(0, 1));
-    JPanel imagesPanel = new JPanel(new GridLayout(0,1));
+    JPanel imagesPanel = new JPanel(new GridLayout(0, 1));
     JPanel buttonsPanel = new JPanel();
+    EntityManager entityManager = DefaultEntityManagerFactory.getInstance().createEntityManager();
 
-    public ProductDialog(JFrame frame, String title) {
+    public ProductDialog(JFrame frame, String title, ProductsScreen productsScreen) {
         super(frame, title);
         super.setVisible(true);
         super.setModal(true);
         super.setAlwaysOnTop(true);
-        super.setModalityType(Dialog.ModalityType.APPLICATION_MODAL);
-        super.setPreferredSize(new Dimension(600,500));
+        super.setModalityType(ModalityType.APPLICATION_MODAL);
+        super.setPreferredSize(new Dimension(400, 300));
         super.setLocationRelativeTo(null);
+        super.setLayout(new BorderLayout());
 
-        this.setLayout(new BorderLayout());
+        this.addButton = productsScreen.getAddButton();
+
+
+        this.confirmButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                addProduct(productsScreen);
+            }
+        });
+
+        this.cancelButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                close();
+            }
+        });
+
+        JPanel formPanel = new JPanel(new GridLayout(0, 2));
+        JPanel buttonsPanel = new JPanel();
 
         formPanel.add(new JLabel("Name: "));
         formPanel.add(this.productNameField);
@@ -58,35 +86,48 @@ public class ProductDialog extends JDialog{
         formPanel.add(new JLabel("Description: "));
         formPanel.add(this.descriptionArea);
 
-        keywordsPanel.setBorder(BorderFactory.createTitledBorder("Keywords"));
-        keywordsPanel.add(keywordsArea);
-        keywordsPanel.add(keywordsBox);
-        keywordsPanel.add(addKeyword);
-        keywordsPanel.add(newKeyword);
-
-        imagesPanel.setBorder(BorderFactory.createTitledBorder("Images"));
-        imagesPanel.add(imagesArea);
-        imagesPanel.add(addImage);
 
         buttonsPanel.add(confirmButton);
         buttonsPanel.add(cancelButton);
-
-        JPanel panel = new JPanel(new GridLayout(0, 1));
-
-        panel.add(formPanel);
-        panel.add(keywordsPanel);
-        panel.add(imagesPanel);
-        
-        this.add(panel);
+        this.add(formPanel);
         this.add(buttonsPanel, BorderLayout.SOUTH);
         this.pack();
 
-        addImage.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                ProductAddImageDialog addImageDialog = new ProductAddImageDialog(frame);
-            }
-        });
 
+    }
+
+    private void close() {
+        addButton.setEnabled(true);
+        ProductDialog.super.dispose();
+    }
+
+    private void addProduct(ProductsScreen productsScreen) {
+
+        EntityTransaction transaction = entityManager.getTransaction();
+
+        try {
+            transaction.begin();
+            ProductEntity newProduct = new ProductEntity();
+            newProduct.setName(this.productNameField.getText());
+            newProduct.setType(this.typeField.getText());
+
+            newProduct.setDateOfProduction(Timestamp.valueOf(this.dateOfProductionField.getText() + " 00:00:00"));
+            newProduct.setPrice(Double.parseDouble(this.priceField.getText()));
+            newProduct.setDescription(this.descriptionArea.getText());
+
+
+            entityManager.persist(newProduct);
+            transaction.commit();
+
+            productsScreen.refreshTable();
+
+        } finally {
+            if (transaction.isActive()) {
+                transaction.rollback();
+            }
+            entityManager.close();
+        }
+
+        close();
     }
 }

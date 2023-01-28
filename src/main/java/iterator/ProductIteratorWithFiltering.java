@@ -1,35 +1,33 @@
 package iterator;
 
-
+import entity.ClientEntity;
 import entity.ContractEntity;
-import entity.OrderEntity;
+import entity.ProductEntity;
 
 import javax.swing.text.html.parser.Entity;
 import java.util.Comparator;
 import java.util.Iterator;
 import java.util.List;
 
-public class OrderIteratorWithFiltering implements Iterator {
+public class ProductIteratorWithFiltering implements Iterator {
 
-    private List<OrderEntity> entities;
-    private OrderEntity current;
+    private List<ProductEntity> entities;
+    private ProductEntity current;
     private String key;
     private Object value;
     private int count = 0;
 
-    public OrderIteratorWithFiltering(List<OrderEntity> entities, String key, Object value) {
+    public ProductIteratorWithFiltering(List<ProductEntity> entities, String key, Object value) {
         this.entities = entities;
         this.key = key;
         this.value = value;
         this.current = null;
-
     }
 
-    private boolean checkMatching(OrderEntity order) {
-
+    private boolean checkMatching(ProductEntity client) {
         switch (this.key) {
-            case "address":
-                if(order.getStartDate().equals((String) this.value))
+            case "name":
+                if(client.getName().equals((String) this.value))
                     return true;
                 else return false;
             default:
