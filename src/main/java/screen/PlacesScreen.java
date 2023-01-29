@@ -124,9 +124,14 @@ public class PlacesScreen extends Screen {
     }
 
     @Override
-    protected EntityDialog createDialog() {
+    protected EntityDialog createAddDialog() {
         JFrame frame = (JFrame) SwingUtilities.getWindowAncestor(PlacesScreen.this);
         return new PlacesDialog(frame, "Add place", PlacesScreen.this);
+    }
+
+    @Override
+    protected EntityDialog createEditDialog() {
+        return null;
     }
 
     @Override

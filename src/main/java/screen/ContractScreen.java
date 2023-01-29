@@ -1,11 +1,9 @@
 package screen;
 
-import contractBuilder.ContractBuilderHTML;
-import contractBuilder.ContractBuilderPdf;
 import controller.ContractController;
-import controller.EmployeeController;
 import controller.EntityController;
 import dialogs.ContractDialog;
+import dialogs.ContractEditDialog;
 import dialogs.EntityDialog;
 import entity.ContractEntity;
 import entityFactory.DefaultEntityManagerFactory;
@@ -19,63 +17,20 @@ import view.EntityView;
 
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.util.ArrayList;
 import java.util.List;
 
 public class ContractScreen extends Screen {
-    private JButton generatePdfButton;
-    private JButton generateHTMLButton;
 
     public ContractScreen() {
         super();
 
         this.tablePanel.setBorder(BorderFactory.createTitledBorder("Contracts table"));
         this.detailsPanel.setBorder(BorderFactory.createTitledBorder("Contract details"));
-
-        this.generateHTMLButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                JFrame frame = (JFrame) SwingUtilities.getWindowAncestor(ContractScreen.this);
-                if(selectedEntity == null) {
-                    noContractSelectedWarning(frame);
-                    return;
-                }
-                ContractBuilderHTML contractBuilder = new ContractBuilderHTML(frame, (ContractEntity) selectedEntity);
-                contractBuilder.buildTitle();
-                contractBuilder.buildContents();
-                contractBuilder.buildSignature("Janusz Szef");
-                contractBuilder.getHTMLDocument();
-            }
-        });
-        this.generatePdfButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                JFrame frame = (JFrame) SwingUtilities.getWindowAncestor(ContractScreen.this);
-                if(selectedEntity == null) {
-                    noContractSelectedWarning(frame);
-                    return;
-                }
-
-                ContractBuilderPdf contractBuilder = new ContractBuilderPdf(frame, (ContractEntity) selectedEntity);
-                contractBuilder.buildTitle();
-                contractBuilder.buildContents();
-                contractBuilder.buildSignature("Janusz Szef");
-
-                contractBuilder.getPdfDocument();
-            }
-        });
     }
 
     private static void noContractSelectedWarning(JFrame frame) {
         JOptionPane.showMessageDialog(frame, "Please select contract first", "No contract selected", JOptionPane.WARNING_MESSAGE);
-    }
-
-    @Override
-    protected void addAdditionalButtons(JPanel buttonsPanel) {
-        this.generateHTMLButton = new JButton("Generate HTML");
-        this.generatePdfButton = new JButton("Generate Pdf");
     }
 
     @Override
@@ -108,7 +63,7 @@ public class ContractScreen extends Screen {
             String date_start = String.valueOf(((ContractEntity) c).getDateStart());
             int employee_id = ((ContractEntity) c).getEmployeeEmployeeId();
             String employeeName = ((ContractEntity) c).getEmployeeName(entityManager);
-            rows.add(new String[]{String.valueOf(id), date_start, employeeName});
+            rows.add(new String[]{String.valueOf(id), date_start.substring(0, 10), employeeName});
         }
 
         Object[][] data = new Object[rows.size()][columnsNr];
@@ -164,9 +119,15 @@ public class ContractScreen extends Screen {
     }
 
     @Override
-    protected EntityDialog createDialog() {
+    protected EntityDialog createAddDialog() {
         JFrame frame = (JFrame) SwingUtilities.getWindowAncestor(ContractScreen.this);
         return new ContractDialog(frame, "Add contract", ContractScreen.this);
+    }
+
+    @Override
+    protected EntityDialog createEditDialog() {
+        JFrame frame = (JFrame) SwingUtilities.getWindowAncestor(ContractScreen.this);
+        return new ContractEditDialog(frame, "Add contract", ContractScreen.this, (ContractEntity) this.selectedEntity);
     }
 
     @Override
@@ -186,7 +147,7 @@ public class ContractScreen extends Screen {
             contractEmployeeQuery.setParameter("employee_id", employee_id);
 
             String employeeName = String.valueOf(contractEmployeeQuery.getSingleResult());
-            model.addRow(new String[]{String.valueOf(id), date_start, employeeName});
+            model.addRow(new String[]{String.valueOf(id), date_start.substring(0, 10), employeeName});
         }
         entityManager.close();
     }

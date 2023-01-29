@@ -133,10 +133,16 @@ public class ProductGenresScreen extends Screen {
     }
 
     @Override
-    protected EntityDialog createDialog() {
+    protected EntityDialog createAddDialog() {
         JFrame frame = (JFrame) SwingUtilities.getWindowAncestor(ProductGenresScreen.this);
         return new ProductGenreDialog(frame, "Add genre", ProductGenresScreen.this);
     }
+
+    @Override
+    protected EntityDialog createEditDialog() {
+        return null;
+    }
+
     @Override
     public void refreshTable() {
         DefaultTableModel model = (DefaultTableModel) table.getModel();

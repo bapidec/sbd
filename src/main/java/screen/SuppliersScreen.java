@@ -123,9 +123,14 @@ public class SuppliersScreen extends Screen {
     }
 
     @Override
-    protected EntityDialog createDialog() {
+    protected EntityDialog createAddDialog() {
         JFrame frame = (JFrame) SwingUtilities.getWindowAncestor(SuppliersScreen.this);
         return new SupplierDialog(frame, "Add supplier", SuppliersScreen.this);
+    }
+
+    @Override
+    protected EntityDialog createEditDialog() {
+        return null;
     }
 
     @Override

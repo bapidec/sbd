@@ -4,7 +4,6 @@ import entity.ContractEntity;
 import entityFactory.DefaultEntityManagerFactory;
 import jakarta.persistence.*;
 import screen.ContractScreen;
-import screen.Screen;
 
 import javax.swing.*;
 import java.awt.*;
@@ -13,12 +12,6 @@ import java.awt.event.ActionListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.sql.Timestamp;
-import java.text.SimpleDateFormat;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.Objects;
-import java.util.Date;
-import javax.swing.SpinnerDateModel;
 
 public class ContractDialog extends JDialog implements EntityDialog {
 
@@ -32,7 +25,7 @@ public class ContractDialog extends JDialog implements EntityDialog {
     JComboBox place = new JComboBox<>();
     JButton confirmButton = new JButton("Confirm");
     JButton cancelButton = new JButton("Cancel");
-    JButton addButton;
+    JButton screenButton;
 
     EntityManager entityManager = DefaultEntityManagerFactory.getInstance().createEntityManager();
 
@@ -46,7 +39,7 @@ public class ContractDialog extends JDialog implements EntityDialog {
         super.setLocationRelativeTo(null);
         super.setLayout(new BorderLayout());
 
-        this.addButton = contractScreen.getAddButton();
+        this.screenButton = contractScreen.getAddButton();
 
         addEmployees();
         addPlaces();
@@ -54,7 +47,7 @@ public class ContractDialog extends JDialog implements EntityDialog {
         this.confirmButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                addContract(contractScreen);
+                confirmAction(contractScreen);
             }
         });
 
@@ -111,12 +104,12 @@ public class ContractDialog extends JDialog implements EntityDialog {
         }
     }
 
-    private void close() {
-        addButton.setEnabled(true);
+    protected void close() {
+        screenButton.setEnabled(true);
         ContractDialog.super.dispose();
     }
 
-    private void addContract(ContractScreen contractScreen) {
+    protected void confirmAction(ContractScreen contractScreen) {
         EntityTransaction transaction = entityManager.getTransaction();
 
         try {

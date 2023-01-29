@@ -128,9 +128,14 @@ public class OrdersScreen extends Screen {
     }
 
     @Override
-    protected EntityDialog createDialog() {
+    protected EntityDialog createAddDialog() {
         JFrame frame = (JFrame) SwingUtilities.getWindowAncestor(OrdersScreen.this);
         return new OrderDialog(frame, "Add order", OrdersScreen.this);
+    }
+
+    @Override
+    protected EntityDialog createEditDialog() {
+        return null;
     }
 
     @Override

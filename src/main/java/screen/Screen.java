@@ -44,7 +44,7 @@ public abstract class Screen extends JPanel {
             public void actionPerformed(ActionEvent e) {
                 JFrame frame = (JFrame) SwingUtilities.getWindowAncestor(Screen.this);
                 addButton.setEnabled(false);
-                EntityDialog addDialog = createDialog();
+                EntityDialog addDialog = createAddDialog();
             }
         });
 
@@ -62,13 +62,14 @@ public abstract class Screen extends JPanel {
             public void actionPerformed(ActionEvent e) {
                 JFrame frame = (JFrame) SwingUtilities.getWindowAncestor(Screen.this);
                 editButton.setEnabled(false);
-                //edit dialog
+                createEditDialog();
             }
         });
 
-        editButton.setEnabled(false);
 
     }
+
+
 
     public JButton getAddButton() {
         return addButton;
@@ -113,12 +114,9 @@ public abstract class Screen extends JPanel {
                     return;
                 }
 
-                selectedEntity = getSelectedEntity();
+                setSelectedEntity(getSelectedEntity());
 
-                EntityController controller = createController();
-                controller.setEntity(selectedEntity);
-                controller.setView(view);
-                controller.updateView();
+
             }
         });
 
@@ -130,6 +128,14 @@ public abstract class Screen extends JPanel {
         this.tablePanel.add(tablePane);
 
         this.add(tablePanel);
+    }
+
+    public void setSelectedEntity(Entity entity) {
+        selectedEntity = entity;
+        EntityController controller = createController();
+        controller.setEntity(selectedEntity);
+        controller.setView(view);
+        controller.updateView();
     }
 
     protected void createFilters() {
@@ -152,7 +158,7 @@ public abstract class Screen extends JPanel {
     protected abstract void refreshTable();
 
     // metody szablonowe
-    protected abstract void addAdditionalButtons(JPanel buttonsPanel);
+    protected void addAdditionalButtons(JPanel buttonsPanel){};
     protected abstract Entity getSelectedEntity();
     protected abstract Object[][] fetchDataFromDatabase(int length);
     protected abstract String[] createColumnNames();
@@ -161,7 +167,10 @@ public abstract class Screen extends JPanel {
     // metody fabrykujące
     protected abstract EntityView createView();
     protected abstract EntityController createController();
-    protected abstract EntityDialog createDialog();
+    protected abstract EntityDialog createAddDialog();
+    protected abstract EntityDialog createEditDialog();
 
-
+    public JButton getEditButton() {
+        return editButton;
+    }
 }

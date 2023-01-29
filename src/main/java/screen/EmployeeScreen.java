@@ -132,9 +132,14 @@ public class EmployeeScreen extends Screen {
     }
 
     @Override
-    protected EntityDialog createDialog() {
+    protected EntityDialog createAddDialog() {
         JFrame frame = (JFrame) SwingUtilities.getWindowAncestor(EmployeeScreen.this);
         return new EmployeeDialog(frame, "Add employee", EmployeeScreen.this);
+    }
+
+    @Override
+    protected EntityDialog createEditDialog() {
+        return null;
     }
 
     @Override

@@ -133,9 +133,14 @@ public class ProductsScreen extends Screen{
     }
 
     @Override
-    protected EntityDialog createDialog() {
+    protected EntityDialog createAddDialog() {
         JFrame frame = (JFrame) SwingUtilities.getWindowAncestor(ProductsScreen.this);
         return new ProductDialog(frame, "Add product", ProductsScreen.this);
+    }
+
+    @Override
+    protected EntityDialog createEditDialog() {
+        return null;
     }
 
     @Override

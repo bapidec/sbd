@@ -35,10 +35,12 @@ public class ContractController implements EntityController{
             return;
         }
         String employeeName = findEmployeeName();
+        String startDate = String.valueOf(contractEntity.getDateStart());
+        String endDate = String.valueOf(contractEntity.getDateEnd());
         contractView.showDetails(
                 String.valueOf(contractEntity.getPaymentAmount()),
-                String.valueOf(contractEntity.getDateStart()),
-                String.valueOf(contractEntity.getDateEnd()),
+                startDate.substring(0, 10),
+                endDate.substring(0, 10),
                 contractEntity.getType(),
                 employeeName
         );
