@@ -1,20 +1,15 @@
 package dialogs;
 
 import entity.EmployeeEntity;
-import entity.SupplierEntity;
 import entityFactory.DefaultEntityManagerFactory;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityTransaction;
-import org.w3c.dom.Entity;
 import screen.EmployeeScreen;
-import screen.SuppliersScreen;
 
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.event.WindowAdapter;
-import java.awt.event.WindowEvent;
 import java.sql.Timestamp;
 
 public class EmployeeDialog extends JDialog implements EntityDialog {
@@ -45,7 +40,7 @@ public class EmployeeDialog extends JDialog implements EntityDialog {
         this.confirmButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                addEmployee(employeeScreen);
+                confirmAction(employeeScreen);
             }
         });
         this.cancelButton.addActionListener(new ActionListener() {
@@ -88,12 +83,12 @@ public class EmployeeDialog extends JDialog implements EntityDialog {
 
     }
 
-    private void close() {
+    protected void close() {
         addButton.setEnabled(true);
         EmployeeDialog.super.dispose();
     }
 
-    private void addEmployee(EmployeeScreen employeeScreen) {
+    protected void confirmAction(EmployeeScreen employeeScreen) {
         EntityTransaction transaction = entityManager.getTransaction();
 
 
