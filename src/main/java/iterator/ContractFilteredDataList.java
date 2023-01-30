@@ -17,6 +17,6 @@ public class ContractFilteredDataList implements Iterable {
     }
     @Override
     public Iterator iterator() {
-        return new IteratorWithFiltering(entities, key, value);
+        return new ContractIteratorWithFiltering(entities, key, value);
     }
 }

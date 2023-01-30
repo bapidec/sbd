@@ -24,9 +24,11 @@ public abstract class Screen extends JPanel {
     protected JButton deleteButton;
     protected JButton editButton;
     protected JComboBox filtersKeyBox;
-    protected JComboBox filterValueBox;
+    protected JComponent filterValueBox;
     protected JPanel filtersPanel;
     protected JButton clearFiltersButton;
+    private JButton setFiltersButton;
+    protected JPanel filterKeyValuePanel;
 
     public Screen() {
         super(new GridLayout(0,2));
@@ -63,6 +65,24 @@ public abstract class Screen extends JPanel {
                 JFrame frame = (JFrame) SwingUtilities.getWindowAncestor(Screen.this);
                 editButton.setEnabled(false);
                 createEditDialog();
+            }
+        });
+
+        this.clearFiltersButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                filtersKeyBox.setSelectedItem(null);
+                if(filterValueBox instanceof JComboBox)
+                    ((JComboBox<?>) filterValueBox).setSelectedItem(null);
+                else if(filterValueBox instanceof JTextField)
+                    ((JTextField) filterValueBox).setText("");
+                refreshTable();
+            }
+        });
+        this.setFiltersButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                refreshTable();
             }
         });
 
@@ -141,15 +161,20 @@ public abstract class Screen extends JPanel {
     protected void createFilters() {
         this.filtersPanel = new JPanel(new BorderLayout());
         this.clearFiltersButton = new JButton("Clear");
+        this.setFiltersButton = new JButton("Set");
         this.filtersKeyBox = new JComboBox<>();
-        this.filterValueBox = new JComboBox<>();
+        this.filterValueBox = new JTextField();
 
-        JPanel filterByOrdersPanel = new JPanel(new GridLayout(0, 2));
-        filterByOrdersPanel.add(this.filtersKeyBox);
-        filterByOrdersPanel.add(this.filterValueBox);
+        this.filterKeyValuePanel = new JPanel(new GridLayout(0, 2));
+        filterKeyValuePanel.add(this.filtersKeyBox);
+        filterKeyValuePanel.add(this.filterValueBox);
 
-        this.filtersPanel.add(filterByOrdersPanel);
-        this.filtersPanel.add(clearFiltersButton, BorderLayout.SOUTH);
+        this.filtersPanel.add(filterKeyValuePanel);
+
+        JPanel filterButtonsPanel = new JPanel();
+        filterButtonsPanel.add(clearFiltersButton);
+        filterButtonsPanel.add(setFiltersButton);
+        this.filtersPanel.add(filterButtonsPanel, BorderLayout.SOUTH);
 
         this.filtersPanel.setBorder(BorderFactory.createTitledBorder("Filter"));
         this.tablePanel.add(filtersPanel, BorderLayout.NORTH);

@@ -8,6 +8,8 @@ import java.sql.Timestamp;
 @Entity
 @NamedQuery(name = "ContractEntity.all", query = "FROM ContractEntity c")
 @NamedQuery(name = "ContractEntity.byId", query = "FROM ContractEntity c WHERE c.contractId = :contractId")
+@NamedQuery(name = "ContractEntity.byType", query = "FROM ContractEntity c WHERE c.type = :type")
+@NamedQuery(name = "ContractEntity.byPlaceId", query = "FROM ContractEntity c WHERE c.placePlaceId = :place_id")
 @Table(name = "contract", schema = "sbd", catalog = "")
 public class ContractEntity implements Entity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
