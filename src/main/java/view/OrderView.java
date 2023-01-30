@@ -8,7 +8,7 @@ public class OrderView extends JPanel implements EntityView {
     JTextField endDateField = new JTextField();
     JTextField addressField = new JTextField();
     JTextField clientNameField = new JTextField();
-    JTextField clientMailField = new JTextField();
+    JTextField productNameField = new JTextField();
     JTextField clientPhoneField = new JTextField();
     JTextArea productsArea = new JTextArea();
 
@@ -22,7 +22,6 @@ public class OrderView extends JPanel implements EntityView {
         endDateField.setEditable(false);
         addressField.setEditable(false);
         clientNameField.setEditable(false);
-        clientMailField.setEditable(false);
         clientPhoneField.setEditable(false);
         productsArea.setEditable(false);
 
@@ -35,25 +34,20 @@ public class OrderView extends JPanel implements EntityView {
         super.add(new JLabel("Address: "));
         super.add(addressField);
 
-        super.add(new JLabel("Client name: "));
+        super.add(new JLabel("Client id: "));
         super.add(clientNameField);
 
-        super.add(new JLabel("Client email: "));
-        super.add(clientMailField);
+        super.add(new JLabel("Product id: "));
+        super.add(productNameField);
 
-        super.add(new JLabel("Client phone number: "));
-        super.add(clientPhoneField);
 
-        super.add(new JLabel("Ordered products: "));
-        super.add(productsArea);
     }
 
     public void showOrderDetails(String clientId, String address, String startDate, String endDate, String orderId) {
-        startDateField.setText(clientId);
-        endDateField.setText(address);
-        addressField.setText(startDate);
-        clientNameField.setText(endDate);
-        clientNameField.setText(orderId);
+        startDateField.setText(startDate);
+        endDateField.setText(endDate);
+        addressField.setText(address);
+        clientNameField.setText(clientId);
     }
 
     @Override

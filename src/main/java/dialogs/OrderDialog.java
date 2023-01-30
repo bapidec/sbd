@@ -1,12 +1,10 @@
 package dialogs;
 
-import entity.ClientEntity;
 import entity.OrderEntity;
 import entityFactory.DefaultEntityManagerFactory;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityTransaction;
 import jakarta.persistence.TypedQuery;
-import screen.ClientsScreen;
 import screen.OrdersScreen;
 
 import javax.swing.*;
@@ -51,7 +49,7 @@ public class OrderDialog extends JDialog implements EntityDialog{
         this.confirmButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                addOrder(ordersScreen);
+                confirmAction(ordersScreen);
             }
         });
 
@@ -112,7 +110,7 @@ public class OrderDialog extends JDialog implements EntityDialog{
         addButton.setEnabled(true);
         OrderDialog.super.dispose();
     }
-    protected void addOrder(OrdersScreen ordersScreen) {
+    protected void confirmAction(OrdersScreen ordersScreen) {
         EntityTransaction transaction = entityManager.getTransaction();
 
 

@@ -3,9 +3,7 @@ package screen;
 import controller.ClientController;
 import controller.EntityController;
 import controller.OrderController;
-import dialogs.ClientDialog;
-import dialogs.EntityDialog;
-import dialogs.OrderDialog;
+import dialogs.*;
 import entity.ClientEntity;
 import entity.OrderEntity;
 import entityFactory.DefaultEntityManagerFactory;
@@ -135,7 +133,8 @@ public class OrdersScreen extends Screen {
 
     @Override
     protected EntityDialog createEditDialog() {
-        return null;
+        JFrame frame = (JFrame) SwingUtilities.getWindowAncestor(OrdersScreen.this);
+        return new OrderEditDialog(frame, "Edit order", OrdersScreen.this, (OrderEntity) this.selectedEntity);
     }
 
     @Override
