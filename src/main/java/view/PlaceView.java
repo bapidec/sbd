@@ -8,6 +8,7 @@ public class PlaceView extends JPanel implements EntityView {
     JTextField productLimitField = new JTextField();
     JTextField employeeLimitField = new JTextField();
     JTextField maintenanceCostField = new JTextField();
+    JTextField supplierField = new JTextField();
     JTextField typeField = new JTextField();
 
     public PlaceView() {
@@ -20,6 +21,7 @@ public class PlaceView extends JPanel implements EntityView {
         productLimitField.setEditable(false);
         employeeLimitField.setEditable(false);
         maintenanceCostField.setEditable(false);
+        supplierField.setEditable(false);
         typeField.setEditable(false);
 
         super.add(new JLabel("Location: "));
@@ -31,19 +33,22 @@ public class PlaceView extends JPanel implements EntityView {
         super.add(new JLabel("Employee limit: "));
         super.add(employeeLimitField);
 
-        super.add(new JLabel("Maintenance cost: "));
+        super.add(new JLabel("Maintenance Cost: "));
         super.add(maintenanceCostField);
+
+        super.add(new JLabel("Supplier id: "));
+        super.add(supplierField);
 
         super.add(new JLabel("Type: "));
         super.add(typeField);
     }
 
-    public void showPlacesDetails(String location, String productLimit, String employeeLimit, String maintenanceCost, String type) {
+    public void showPlacesDetails(String location, String productLimit, String employeeLimit, String maintenanceCost, String supplierId) {
         locationField.setText(location);
         productLimitField.setText(productLimit);
         employeeLimitField.setText(employeeLimit);
         maintenanceCostField.setText(maintenanceCost);
-        maintenanceCostField.setText(type);
+        supplierField.setText(supplierId);
         typeField.setText("Shop");
     }
 

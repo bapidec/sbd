@@ -1,11 +1,10 @@
 package dialogs;
 
-import entity.ClientEntity;
 import entity.OrderEntity;
 import entityFactory.DefaultEntityManagerFactory;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityTransaction;
-import screen.ClientsScreen;
+import jakarta.persistence.TypedQuery;
 import screen.OrdersScreen;
 
 import javax.swing.*;
@@ -21,12 +20,12 @@ public class OrderDialog extends JDialog implements EntityDialog{
     JTextField endDate = new JTextField();
     JTextField address = new JTextField();
     JComboBox client = new JComboBox<>();
-    JTextArea products = new JTextArea("");
-    JComboBox productsBox = new JComboBox();
-    JButton addProduct = new JButton("Add product");
+
+    JComboBox productsBox = new JComboBox<>();
+
 
     JPanel formPanel = new JPanel(new GridLayout(0, 2));
-    JPanel productsPanel = new JPanel(new GridLayout(0, 1));
+
     JPanel buttonsPanel = new JPanel();
     JButton addButton;
     EntityManager entityManager = DefaultEntityManagerFactory.getInstance().createEntityManager();
@@ -44,10 +43,13 @@ public class OrderDialog extends JDialog implements EntityDialog{
 
         this.addButton = ordersScreen.getAddButton();
 
+        addClients();
+        addProducts();
+
         this.confirmButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                addOrder(ordersScreen);
+                confirmAction(ordersScreen);
             }
         });
 
@@ -70,10 +72,10 @@ public class OrderDialog extends JDialog implements EntityDialog{
         formPanel.add(new JLabel("Client: "));
         formPanel.add(this.client);
 
-        productsPanel.setBorder(BorderFactory.createTitledBorder("Products"));
-        productsPanel.add(products);
-        productsPanel.add(productsBox);
-        productsPanel.add(addProduct);
+        formPanel.add(new JLabel("Product: "));
+        formPanel.add(this.productsBox);
+
+
 
         buttonsPanel.add(confirmButton);
         buttonsPanel.add(cancelButton);
@@ -81,7 +83,7 @@ public class OrderDialog extends JDialog implements EntityDialog{
         JPanel panel = new JPanel(new GridLayout(0, 1));
 
         panel.add(formPanel);
-        panel.add(productsPanel);
+
 
         this.add(panel);
         this.add(buttonsPanel, BorderLayout.SOUTH);
@@ -89,11 +91,26 @@ public class OrderDialog extends JDialog implements EntityDialog{
 
 
     }
-    private void close() {
+
+    private void addClients() {
+        TypedQuery<Integer> clientIds = entityManager.createNamedQuery("ClientEntity.ids", Integer.class);
+        for(Integer i : clientIds.getResultList()) {
+            this.client.addItem(i);
+        }
+    }
+
+    private void addProducts(){
+        TypedQuery<Integer> productIds = entityManager.createNamedQuery("ProductEntity.ids", Integer.class);
+        for(Integer i : productIds.getResultList()) {
+            this.productsBox.addItem(i);
+        }
+    }
+
+    protected void close() {
         addButton.setEnabled(true);
         OrderDialog.super.dispose();
     }
-    private void addOrder(OrdersScreen ordersScreen) {
+    protected void confirmAction(OrdersScreen ordersScreen) {
         EntityTransaction transaction = entityManager.getTransaction();
 
 

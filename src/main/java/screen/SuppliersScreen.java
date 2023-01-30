@@ -2,8 +2,11 @@ package screen;
 
 import controller.EntityController;
 import controller.SupplierController;
+import dialogs.ClientEditDialog;
 import dialogs.EntityDialog;
 import dialogs.SupplierDialog;
+import dialogs.SupplierEditDialog;
+import entity.ClientEntity;
 import entity.SupplierEntity;
 import entityFactory.DefaultEntityManagerFactory;
 import iterator.SupplierFilteredDataList;
@@ -130,7 +133,8 @@ public class SuppliersScreen extends Screen {
 
     @Override
     protected EntityDialog createEditDialog() {
-        return null;
+        JFrame frame = (JFrame) SwingUtilities.getWindowAncestor(SuppliersScreen.this);
+        return new SupplierEditDialog(frame, "Edit supplier", SuppliersScreen.this, (SupplierEntity) this.selectedEntity);
     }
 
     @Override

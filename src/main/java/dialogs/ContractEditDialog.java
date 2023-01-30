@@ -20,6 +20,7 @@ public class ContractEditDialog extends ContractDialog {
         this.screenButton = contractScreen.getEditButton();
         this.contract = contract;
 
+
         fillData();
 
     }

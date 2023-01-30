@@ -3,10 +3,8 @@ package screen;
 import controller.EntityController;
 import controller.ProductGenreController;
 import controller.SupplierController;
-import dialogs.ClientDialog;
-import dialogs.EntityDialog;
-import dialogs.ProductGenreDialog;
-import dialogs.SupplierDialog;
+import dialogs.*;
+import entity.ClientEntity;
 import entity.ProductGenreEntity;
 import entity.SupplierEntity;
 import entityFactory.DefaultEntityManagerFactory;
@@ -140,9 +138,9 @@ public class ProductGenresScreen extends Screen {
 
     @Override
     protected EntityDialog createEditDialog() {
-        return null;
+        JFrame frame = (JFrame) SwingUtilities.getWindowAncestor(ProductGenresScreen.this);
+        return new ProductGenreEditDialog(frame, "Edit genre", ProductGenresScreen.this, (ProductGenreEntity)this.selectedEntity);
     }
-
     @Override
     public void refreshTable() {
         DefaultTableModel model = (DefaultTableModel) table.getModel();

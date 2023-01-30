@@ -46,7 +46,7 @@ public class ClientDialog extends JDialog implements EntityDialog {
         this.confirmButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                addClient(clientScreen);
+                confirmAction(clientScreen);
             }
         });
 
@@ -89,12 +89,12 @@ public class ClientDialog extends JDialog implements EntityDialog {
 
 
 
-    private void close() {
+    protected void close() {
         addButton.setEnabled(true);
         ClientDialog.super.dispose();
     }
 
-    private void addClient(ClientsScreen clientScreen) {
+    protected void confirmAction(ClientsScreen clientScreen) {
         EntityTransaction transaction = entityManager.getTransaction();
 
 

@@ -10,6 +10,7 @@ import java.sql.Timestamp;
 @NamedQuery(name = "SupplierEntity.byId", query = "FROM SupplierEntity c WHERE c.supplierId = :supplierId")
 @NamedQuery(name = "Suppliers.ids", query = "select c.supplierId FROM SupplierEntity c")
 @Table(name = "supplier", schema = "sbd", catalog = "")
+@NamedQuery(name = "SupplierEntity.ids", query = "SELECT s.supplierId FROM SupplierEntity s")
 public class SupplierEntity implements Entity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Id

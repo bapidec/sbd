@@ -9,6 +9,7 @@ import java.sql.Timestamp;
 @NamedQuery(name = "ProductEntity.all", query = "FROM ProductEntity c")
 @NamedQuery(name = "ProductEntity.byId", query = "FROM ProductEntity c WHERE c.productId = :productId")
 @Table(name = "product", schema = "sbd", catalog = "")
+@NamedQuery(name = "ProductEntity.ids", query = "SELECT p.productId FROM ProductEntity p")
 public class ProductEntity implements Entity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Id

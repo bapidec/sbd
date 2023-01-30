@@ -3,8 +3,11 @@ package screen;
 import controller.ClientController;
 import controller.EntityController;
 import dialogs.ClientDialog;
+import dialogs.ClientEditDialog;
+import dialogs.ContractEditDialog;
 import dialogs.EntityDialog;
 import entity.ClientEntity;
+import entity.ContractEntity;
 import entityFactory.DefaultEntityManagerFactory;
 import iterator.ClientFilteredDataList;
 import jakarta.persistence.EntityManager;
@@ -131,7 +134,8 @@ public class ClientsScreen extends Screen {
 
     @Override
     protected EntityDialog createEditDialog() {
-        return null;
+        JFrame frame = (JFrame) SwingUtilities.getWindowAncestor(ClientsScreen.this);
+        return new ClientEditDialog(frame, "Edit client", ClientsScreen.this, (ClientEntity) this.selectedEntity);
     }
 
     @Override

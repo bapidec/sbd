@@ -3,9 +3,7 @@ package screen;
 import controller.ClientController;
 import controller.EmployeeController;
 import controller.EntityController;
-import dialogs.ClientDialog;
-import dialogs.EmployeeDialog;
-import dialogs.EntityDialog;
+import dialogs.*;
 import entity.ClientEntity;
 import entity.EmployeeEntity;
 import entityFactory.DefaultEntityManagerFactory;
@@ -139,9 +137,9 @@ public class EmployeeScreen extends Screen {
 
     @Override
     protected EntityDialog createEditDialog() {
-        return null;
+        JFrame frame = (JFrame) SwingUtilities.getWindowAncestor(EmployeeScreen.this);
+        return new EmployeeEditDialog(frame, "Edit employee", EmployeeScreen.this, (EmployeeEntity) this.selectedEntity);
     }
-
     @Override
     public void refreshTable() {
         DefaultTableModel model = (DefaultTableModel) table.getModel();

@@ -5,6 +5,7 @@ import entity.ProductEntity;
 import entityFactory.DefaultEntityManagerFactory;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityTransaction;
+import jakarta.persistence.TypedQuery;
 import screen.ClientsScreen;
 import screen.ProductsScreen;
 
@@ -50,6 +51,7 @@ public class ProductDialog extends JDialog implements EntityDialog {
 
         this.addButton = productsScreen.getAddButton();
 
+        addGenres();
 
         this.confirmButton.addActionListener(new ActionListener() {
             @Override
@@ -96,6 +98,14 @@ public class ProductDialog extends JDialog implements EntityDialog {
 
     }
 
+    private void addGenres() {
+        TypedQuery<Integer> genreIds = entityManager.createNamedQuery("ProductGenreEntity.ids", Integer.class);
+        for(Integer i : genreIds.getResultList()) {
+            this.genreBox.addItem(i);
+        }
+
+    }
+
     private void close() {
         addButton.setEnabled(true);
         ProductDialog.super.dispose();
@@ -114,7 +124,7 @@ public class ProductDialog extends JDialog implements EntityDialog {
             newProduct.setDateOfProduction(Timestamp.valueOf(this.dateOfProductionField.getText() + " 00:00:00"));
             newProduct.setPrice(Double.parseDouble(this.priceField.getText()));
             newProduct.setDescription(this.descriptionArea.getText());
-
+            newProduct.setDiscountDiscountId(1);
 
             entityManager.persist(newProduct);
             transaction.commit();
