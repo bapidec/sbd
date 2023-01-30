@@ -42,7 +42,8 @@ public class ContractController implements EntityController{
                 startDate.substring(0, 10),
                 endDate.substring(0, 10),
                 contractEntity.getType(),
-                employeeName
+                employeeName,
+                String.valueOf(contractEntity.getPlacePlaceId())
         );
     }
 
