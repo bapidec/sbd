@@ -1,18 +1,15 @@
 package dialogs;
 
 import entity.ProductGenreEntity;
-import entity.SupplierEntity;
 import entityFactory.DefaultEntityManagerFactory;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityTransaction;
 import screen.ProductGenresScreen;
-import screen.SuppliersScreen;
 
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.sql.Timestamp;
 
 public class ProductGenreDialog extends JDialog implements EntityDialog {
     JTextField name = new JTextField();
@@ -38,7 +35,7 @@ public class ProductGenreDialog extends JDialog implements EntityDialog {
         this.confirmButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                addProductGenre(productGenresScreen);
+                confirmAction(productGenresScreen);
             }
         });
         this.cancelButton.addActionListener(new ActionListener() {
@@ -65,13 +62,13 @@ public class ProductGenreDialog extends JDialog implements EntityDialog {
 
 
     }
-    private void close() {
+    protected void close() {
         addButton.setEnabled(true);
         ProductGenreDialog.super.dispose();
     }
 
 
-    private void addProductGenre(ProductGenresScreen productGenresScreen) {
+    protected void confirmAction(ProductGenresScreen productGenresScreen) {
         EntityTransaction transaction = entityManager.getTransaction();
 
 

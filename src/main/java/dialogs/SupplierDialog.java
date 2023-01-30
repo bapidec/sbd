@@ -41,7 +41,7 @@ public class SupplierDialog extends JDialog implements EntityDialog {
         this.confirmButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                addSupplier(supplierScreen);
+                confirmAction(supplierScreen);
             }
         });
 
@@ -75,12 +75,12 @@ public class SupplierDialog extends JDialog implements EntityDialog {
 
 
     }
-    private void close() {
+    protected void close() {
         addButton.setEnabled(true);
         SupplierDialog.super.dispose();
     }
 
-    private void addSupplier(SuppliersScreen supplierScreen) {
+    protected void confirmAction(SuppliersScreen supplierScreen) {
         EntityTransaction transaction = entityManager.getTransaction();
 
 
