@@ -89,11 +89,11 @@ public class OrderDialog extends JDialog implements EntityDialog{
 
 
     }
-    private void close() {
+    protected void close() {
         addButton.setEnabled(true);
         OrderDialog.super.dispose();
     }
-    private void addOrder(OrdersScreen ordersScreen) {
+    protected void addOrder(OrdersScreen ordersScreen) {
         EntityTransaction transaction = entityManager.getTransaction();
 
 
