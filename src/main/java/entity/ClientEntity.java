@@ -7,6 +7,7 @@ import java.lang.annotation.Annotation;
 @Entity
 @NamedQuery(name = "ClientEntity.all", query = "FROM ClientEntity c")
 @NamedQuery(name = "ClientEntity.byId", query = "FROM ClientEntity c WHERE c.clientId = :clientId")
+@NamedQuery(name = "ClientEntity.ids", query = "SELECT c.clientId FROM ClientEntity c")
 @Table(name = "client", schema = "sbd", catalog = "")
 public class ClientEntity implements Entity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)

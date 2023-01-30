@@ -5,6 +5,7 @@ import jakarta.persistence.*;
 import java.lang.annotation.Annotation;
 
 @Entity
+@NamedQuery(name = "ProductGenreEntity.ids", query = "SELECT p.genreId FROM ProductGenreEntity p")
 @NamedQuery(name = "ProductGenreEntity.all", query = "FROM ProductGenreEntity c")
 @NamedQuery(name = "ProductGenreEntity.byId", query = "FROM ProductGenreEntity c WHERE c.genreId = :genreId")
 @Table(name = "product_genre", schema = "sbd", catalog = "")
