@@ -2,8 +2,11 @@ package screen;
 
 import controller.EntityController;
 import controller.PlaceController;
+import dialogs.ClientEditDialog;
 import dialogs.EntityDialog;
 import dialogs.PlacesDialog;
+import dialogs.PlacesEditDialog;
+import entity.ClientEntity;
 import entity.PlaceEntity;
 import entityFactory.DefaultEntityManagerFactory;
 import iterator.PlaceFilteredDataList;
@@ -131,7 +134,8 @@ public class PlacesScreen extends Screen {
 
     @Override
     protected EntityDialog createEditDialog() {
-        return null;
+        JFrame frame = (JFrame) SwingUtilities.getWindowAncestor(PlacesScreen.this);
+        return new PlacesEditDialog(frame, "Edit place", PlacesScreen.this, (PlaceEntity) this.selectedEntity);
     }
 
     @Override

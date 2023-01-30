@@ -31,7 +31,7 @@ public class PlaceView extends JPanel implements EntityView {
         super.add(new JLabel("Employee limit: "));
         super.add(employeeLimitField);
 
-        super.add(new JLabel("Maintenance cost: "));
+        super.add(new JLabel("Supplier id: "));
         super.add(maintenanceCostField);
 
         super.add(new JLabel("Type: "));

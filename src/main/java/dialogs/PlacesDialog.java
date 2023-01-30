@@ -5,6 +5,7 @@ import entity.PlaceEntity;
 import entityFactory.DefaultEntityManagerFactory;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityTransaction;
+import jakarta.persistence.TypedQuery;
 import screen.PlacesScreen;
 
 import javax.swing.*;
@@ -38,10 +39,12 @@ public class PlacesDialog extends JDialog implements EntityDialog {
 
         this.addButton = placesScreen.getAddButton();
 
+        addSuppliers();
+
         this.confirmButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                addPlace(placesScreen);
+                confirmAction(placesScreen);
             }
         });
 
@@ -83,12 +86,19 @@ public class PlacesDialog extends JDialog implements EntityDialog {
         this.add(buttonsPanel, BorderLayout.SOUTH);
         this.pack();
     }
-    private void close() {
+    protected void close() {
         addButton.setEnabled(true);
         PlacesDialog.super.dispose();
     }
 
-    private void addPlace(PlacesScreen placeScreen) {
+
+    private void addSuppliers() {
+        TypedQuery<Integer> supplierIds = entityManager.createNamedQuery("SupplierEntity.ids", Integer.class);
+        for(Integer i : supplierIds.getResultList()) {
+            this.supplier.addItem(i);
+        }
+    }
+    protected void confirmAction(PlacesScreen placeScreen) {
         EntityTransaction transaction = entityManager.getTransaction();
 
 
