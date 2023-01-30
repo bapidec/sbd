@@ -2,12 +2,10 @@ package iterator;
 
 import entity.ContractEntity;
 
-import javax.swing.text.html.parser.Entity;
-import java.util.Comparator;
 import java.util.Iterator;
 import java.util.List;
 
-public class IteratorWithFiltering implements Iterator {
+public class ContractIteratorWithFiltering implements Iterator {
 
     private List<ContractEntity> entities;
     private ContractEntity current;
@@ -15,7 +13,7 @@ public class IteratorWithFiltering implements Iterator {
     private Object value;
     private int count = 0;
 
-    public IteratorWithFiltering(List<ContractEntity> entities, String key, Object value) {
+    public ContractIteratorWithFiltering(List<ContractEntity> entities, String key, Object value) {
         this.entities = entities;
         this.key = key;
         this.value = value;

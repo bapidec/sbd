@@ -73,6 +73,7 @@ public class PlacesDialog extends JDialog implements EntityDialog {
 
         formPanel.add(new JLabel("Supplier: "));
         formPanel.add(supplier);
+        addSuppliers();
 
         formPanel.add(new JLabel("Building role: "));
         typeField.add(new JRadioButton("Warehouse"));
@@ -99,6 +100,7 @@ public class PlacesDialog extends JDialog implements EntityDialog {
         }
     }
     protected void confirmAction(PlacesScreen placeScreen) {
+    
         EntityTransaction transaction = entityManager.getTransaction();
 
 
@@ -110,7 +112,7 @@ public class PlacesDialog extends JDialog implements EntityDialog {
             newPlace.setProductLimit(Integer.valueOf(this.productLimitField.getText()));
             newPlace.setEmployeeLimit(Integer.valueOf(this.employeeLimitField.getText()));
             newPlace.setMaintenanceCost(Integer.valueOf(this.maintenanceCostField.getText()));
-            newPlace.setSupplierSupplierId(1);//dodać sprawdzanie suppliera
+            newPlace.setSupplierSupplierId((Integer) supplier.getSelectedItem());//dodać sprawdzanie suppliera
 
             entityManager.persist(newPlace);
             transaction.commit();

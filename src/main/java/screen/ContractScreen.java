@@ -17,6 +17,8 @@ import view.EntityView;
 
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
+import java.awt.event.ItemEvent;
+import java.awt.event.ItemListener;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -27,8 +29,63 @@ public class ContractScreen extends Screen {
 
         this.tablePanel.setBorder(BorderFactory.createTitledBorder("Contracts table"));
         this.detailsPanel.setBorder(BorderFactory.createTitledBorder("Contract details"));
+
+        fillFilters();
+
     }
 
+    private void fillFilters() {
+        filtersKeyBox.addItem("Type");
+        filtersKeyBox.addItem("Place ID");
+        filtersKeyBox.setSelectedItem(null);
+
+        filtersKeyBox.addItemListener(new ItemListener() {
+            @Override
+            public void itemStateChanged(ItemEvent e) {
+                if(filtersKeyBox.getSelectedItem() != null) {
+                    if (filtersKeyBox.getSelectedItem().equals("Place ID") && filterValueBox instanceof JTextField) {
+                        valueBoxToComboBox();
+                        addPlaces();
+                    }
+                    if (filtersKeyBox.getSelectedItem().equals("Type") && filterValueBox instanceof JComboBox) {
+                        valueBoxToTextField();
+                    }
+                }
+            }
+        });
+
+    }
+
+    private void valueBoxToComboBox() {
+        filterKeyValuePanel.remove(filterValueBox);
+        filterValueBox = new JComboBox<>();
+        if (filterValueBox instanceof JComboBox) {
+            ((JComboBox<?>) filterValueBox).setSelectedItem(null);
+        }
+        filterKeyValuePanel.add(filterValueBox);
+        filterKeyValuePanel.revalidate();
+    }
+    private void valueBoxToTextField() {
+        filterKeyValuePanel.remove(filterValueBox);
+        filterValueBox = new JTextField();
+        if (filterValueBox instanceof JTextField) {
+            ((JTextField) filterValueBox).setText("");
+        }
+        filterKeyValuePanel.add(filterValueBox);
+        filterKeyValuePanel.revalidate();
+    }
+
+    private void addPlaces() {
+        if(filterValueBox instanceof JComboBox) {
+            EntityManager entityManager = DefaultEntityManagerFactory.getInstance().createEntityManager();
+            TypedQuery<Integer> placeIds = entityManager.createNamedQuery("PlaceEntity.ids", Integer.class);
+            for (Integer i : placeIds.getResultList()) {
+                System.out.println(i);
+                ((JComboBox)filterValueBox).addItem(i);
+            }
+            ((JComboBox<?>) filterValueBox).setSelectedItem(null);
+        }
+    }
     private static void noContractSelectedWarning(JFrame frame) {
         JOptionPane.showMessageDialog(frame, "Please select contract first", "No contract selected", JOptionPane.WARNING_MESSAGE);
     }
@@ -51,13 +108,9 @@ public class ContractScreen extends Screen {
 
         EntityManager entityManager = DefaultEntityManagerFactory.getInstance().createEntityManager();
         TypedQuery<ContractEntity> allContracts = entityManager.createNamedQuery("ContractEntity.all", ContractEntity.class);
+        List resultList = allContracts.getResultList();
 
-
-
-        ContractFilteredDataList filteredResults = new ContractFilteredDataList(allContracts.getResultList(), "type", "job");
-//        List filteredResults = allContracts.getResultList();
-
-        for (Object c: filteredResults) {
+        for (Object c: resultList) {
             c = (ContractEntity) c;
             int id = ((ContractEntity) c).getContractId();
             String date_start = String.valueOf(((ContractEntity) c).getDateStart());
@@ -136,19 +189,35 @@ public class ContractScreen extends Screen {
         model.setRowCount(0);
 
         EntityManager entityManager = DefaultEntityManagerFactory.getInstance().createEntityManager();
-        TypedQuery<ContractEntity> allContracts = entityManager.createNamedQuery("ContractEntity.all", ContractEntity.class);
+        List resultList = null;
 
-        for (ContractEntity c: allContracts.getResultList()) {
-            int id = c.getContractId();
-            String date_start = String.valueOf(c.getDateStart());
-            int employee_id = c.getEmployeeEmployeeId();
-            TypedQuery<String> contractEmployeeQuery = entityManager.createNamedQuery("EmployeeEntity.nameById", String.class);
+        if(filtersKeyBox.getSelectedItem() == null) {
+            TypedQuery<ContractEntity> allContracts = entityManager.createNamedQuery("ContractEntity.all", ContractEntity.class);
+            resultList = allContracts.getResultList();
+        } else if (filtersKeyBox.getSelectedItem() != null) {
+            if(filterValueBox instanceof JTextField && !((JTextField) filterValueBox).getText().equals("")) {
+                TypedQuery<ContractEntity> contractsByType = entityManager.createNamedQuery("ContractEntity.byType", ContractEntity.class);
+                contractsByType.setParameter("type", ((JTextField) filterValueBox).getText());
+                resultList = contractsByType.getResultList();
+            } else if (filterValueBox instanceof JComboBox && ((JComboBox<?>) filterValueBox).getSelectedItem() != null) {
+                TypedQuery<ContractEntity> contractsByPlaceId = entityManager.createNamedQuery("ContractEntity.byPlaceId", ContractEntity.class);
+                contractsByPlaceId.setParameter("place_id", ((JComboBox<?>) filterValueBox).getSelectedItem());
+                resultList = contractsByPlaceId.getResultList();
+            } else {
+                TypedQuery<ContractEntity> allContracts = entityManager.createNamedQuery("ContractEntity.all", ContractEntity.class);
+                resultList = allContracts.getResultList();
+            }
+        }
 
-            contractEmployeeQuery.setParameter("employee_id", employee_id);
-
-            String employeeName = String.valueOf(contractEmployeeQuery.getSingleResult());
+        for (Object c: resultList) {
+            c = (ContractEntity) c;
+            int id = ((ContractEntity) c).getContractId();
+            String date_start = String.valueOf(((ContractEntity) c).getDateStart());
+            int employee_id = ((ContractEntity) c).getEmployeeEmployeeId();
+            String employeeName = ((ContractEntity) c).getEmployeeName(entityManager);
             model.addRow(new String[]{String.valueOf(id), date_start.substring(0, 10), employeeName});
         }
+
         entityManager.close();
     }
 

@@ -11,6 +11,7 @@ public class ContractView extends JPanel implements EntityView{
     JTextField dateEndField = new JTextField();
     JTextField typeField = new JTextField();
     JTextField employeeField = new JTextField();
+    JTextField placeField = new JTextField();
 
     public ContractView(){
         super();
@@ -23,6 +24,7 @@ public class ContractView extends JPanel implements EntityView{
         dateEndField.setEditable(false);
         typeField.setEditable(false);
         employeeField.setEditable(false);
+        placeField.setEditable(false);
 
         super.add(new JLabel("Payment amount: "));
         super.add(paymentAmountField);
@@ -34,13 +36,16 @@ public class ContractView extends JPanel implements EntityView{
         super.add(typeField);
         super.add(new JLabel("Employee name: "));
         super.add(employeeField);
+        super.add(new JLabel("Place ID: "));
+        super.add(placeField);
     }
-    public void showDetails(String paymentAmount, String dateStart, String dateEnd, String type, String employee){
+    public void showDetails(String paymentAmount, String dateStart, String dateEnd, String type, String employee, String placeId){
         paymentAmountField.setText(paymentAmount);
         dateStartField.setText(dateStart);
         dateEndField.setText(dateEnd);
         typeField.setText(type);
         employeeField.setText(employee);
+        placeField.setText(placeId);
     }
 
     public void clear() {
@@ -49,5 +54,6 @@ public class ContractView extends JPanel implements EntityView{
         dateEndField.setText("");
         typeField.setText("");
         employeeField.setText("");
+        placeField.setText("");
     }
 }

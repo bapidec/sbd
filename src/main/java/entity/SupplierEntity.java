@@ -8,6 +8,7 @@ import java.sql.Timestamp;
 @Entity
 @NamedQuery(name = "SupplierEntity.all", query = "FROM SupplierEntity c")
 @NamedQuery(name = "SupplierEntity.byId", query = "FROM SupplierEntity c WHERE c.supplierId = :supplierId")
+@NamedQuery(name = "Suppliers.ids", query = "select c.supplierId FROM SupplierEntity c")
 @Table(name = "supplier", schema = "sbd", catalog = "")
 @NamedQuery(name = "SupplierEntity.ids", query = "SELECT s.supplierId FROM SupplierEntity s")
 public class SupplierEntity implements Entity {
